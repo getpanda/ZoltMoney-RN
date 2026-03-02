@@ -97,9 +97,6 @@ const LoginScreen = ({ navigation }: any) => {
                                 <Text style={styles.socialIcon}>G</Text>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.socialButton}>
-                                <Text style={styles.socialIcon}>f</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.socialButton}>
                                 <Text style={styles.socialIcon}></Text>
                             </TouchableOpacity>
                         </View>
@@ -239,7 +236,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
     },
     socialButton: {
-        width: '30%',
+        width: '48%',
         height: 55,
         borderRadius: 12,
         backgroundColor: 'rgba(255,255,255,0.05)',

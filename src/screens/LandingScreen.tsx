@@ -38,14 +38,14 @@ const LandingScreen = ({ navigation }: any) => {
                 <View style={styles.footer}>
                     <TouchableOpacity
                         style={styles.primaryButton}
-                        onPress={() => navigation.navigate('Home')}
+                        onPress={() => navigation.navigate('Login')}
                     >
                         <Text style={styles.buttonText}>Get Started</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.secondaryButton}
-                        onPress={() => { }}
+                        onPress={() => navigation.navigate('Login')}
                     >
                         <Text style={styles.secondaryButtonText}>Login to existing account</Text>
                     </TouchableOpacity>

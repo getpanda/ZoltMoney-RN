@@ -5,6 +5,7 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { withStallion } from 'react-native-stallion';
 
 import LandingScreen from './src/screens/LandingScreen';
+import LoginScreen from './src/screens/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
 
@@ -29,6 +30,11 @@ function App() {
           <Stack.Screen
             name="Landing"
             component={LandingScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
+            name="Login"
+            component={LoginScreen}
             options={{ headerShown: false }}
           />
           <Stack.Screen

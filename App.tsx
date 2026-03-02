@@ -4,6 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { withStallion } from 'react-native-stallion';
 
+import LandingScreen from './src/screens/LandingScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
 
@@ -14,7 +15,7 @@ function App() {
     <SafeAreaProvider>
       <NavigationContainer>
         <Stack.Navigator
-          initialRouteName="Home"
+          initialRouteName="Landing"
           screenOptions={{
             headerStyle: {
               backgroundColor: '#FFFFFF',
@@ -26,9 +27,14 @@ function App() {
           }}
         >
           <Stack.Screen
+            name="Landing"
+            component={LandingScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={{ title: 'ZoltMoney' }}
+            options={{ title: 'Dashboard' }}
           />
           <Stack.Screen
             name="Details"

@@ -53,13 +53,6 @@ const LandingScreen = ({ navigation }: any) => {
                     >
                         <Text style={styles.buttonText}>Get Started</Text>
                     </TouchableOpacity>
-
-                    <TouchableOpacity
-                        style={styles.secondaryButton}
-                        onPress={handleLoginNavigation}
-                    >
-                        <Text style={styles.secondaryButtonText}>Login to existing account</Text>
-                    </TouchableOpacity>
                 </View>
             </SafeAreaView>
         </ImageBackground>

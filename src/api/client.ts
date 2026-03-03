@@ -9,6 +9,8 @@ const client = axios.create({
     headers: {
         'Content-Type': 'application/json',
         'Accept': 'application/json',
+        'x-api-key-1': '36Kjh9MI4FANqEOw6xJBTec3uVe0dXnN',
+        'x-api-key-2': 'DVgcmRtZMrOA3EccCDjeIpDsZrCXwJDQ',
     },
 });
 
@@ -16,6 +18,14 @@ const client = axios.create({
 // We will later integrate SecureStore to persist tokens
 client.interceptors.request.use(
     async (config) => {
+        // Log the outgoing request for debugging
+        console.log('--- API Request ---');
+        console.log('Method:', config.method?.toUpperCase());
+        console.log('URL:', config.url);
+        console.log('Headers:', config.headers);
+        console.log('Body:', config.data);
+        console.log('-------------------');
+
         // const token = await SecureStore.getItemAsync('userToken');
         // if (token) {
         //   config.headers.Authorization = `Bearer ${token}`;

@@ -6,8 +6,11 @@ import { encodeStringToReversedHex } from '../utils/stringUtils';
  * @param fullMobileNumber - The phone number with country code (e.g., +91XXXXXXXXXX)
  */
 export const loginInit = async (fullMobileNumber: string) => {
+    // Strip spaces before encoding to hex
+    const cleanNumber = fullMobileNumber.replace(/\s+/g, '');
     const payload = {
-        mobile_number: encodeStringToReversedHex(fullMobileNumber),
+        mobile_number: encodeStringToReversedHex(cleanNumber),
+        turnstile_token: null,
     };
     const response = await client.post('user/send-otp', payload);
     return response.data;
@@ -17,13 +20,21 @@ export const loginInit = async (fullMobileNumber: string) => {
  * Verifies the OTP sent to the user.
  * @param fullMobileNumber - The phone number with country code
  * @param otp - The 6-digit OTP code
+ * @param country - Detailed country object { code, shortcode, name }
  */
-export const loginVerify = async (fullMobileNumber: string, otp: string) => {
+export const loginVerify = async (fullMobileNumber: string, otp: string, country: { code: string, shortcode: string, name: string }) => {
+    // Strip spaces before encoding to hex
+    const cleanNumber = fullMobileNumber.replace(/\s+/g, '');
     const payload = {
         passcode: encodeStringToReversedHex(otp),
-        mobile_number: encodeStringToReversedHex(fullMobileNumber),
-        fcm_token: 'placeholder_fcm_token_rn',
-        country: { iso2: 'IN' }, // Default country for now
+        mobile_number: encodeStringToReversedHex(cleanNumber),
+        fcm_token: '', // Empty string instead of placeholder to avoid validation issues
+        country: {
+            shortcode: country.shortcode?.toUpperCase(),
+            code: country.code?.replace('+', ''),
+            name: country.name
+        },
+        turnstile_token: null,
     };
     const response = await client.post('user/verify-otp', payload);
     return response.data;

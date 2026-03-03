@@ -53,7 +53,20 @@ const LoginScreen = ({ navigation }: any) => {
 
         setLoading(true);
         try {
-            const data = await loginVerify(formattedValue, otp);
+            // Extract country data from phone input ref
+            const countryCode = phoneInput.current?.getCountryCode() || 'IN';
+            const callingCode = phoneInput.current?.getCallingCode() || '91';
+
+            // For now, mapping common countries or using shortcode as fallback for name
+            const countryName = countryCode === 'IN' ? 'India' : countryCode;
+
+            const countryData = {
+                code: `+${callingCode}`,
+                shortcode: countryCode,
+                name: countryName
+            };
+
+            const data = await loginVerify(formattedValue, otp, countryData);
 
             // Persist session data and wallet type from panda-web response
             if (data.token || data.access_token) {

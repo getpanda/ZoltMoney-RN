@@ -9,6 +9,9 @@ import LoginScreen from './src/screens/LoginScreen';
 import HomeScreen from './src/screens/HomeScreen';
 import DetailsScreen from './src/screens/DetailsScreen';
 
+import BiometricLoginScreen from './src/screens/BiometricLoginScreen';
+import SupportChatScreen from './src/screens/SupportChatScreen';
+
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -19,9 +22,9 @@ function App() {
           initialRouteName="Landing"
           screenOptions={{
             headerStyle: {
-              backgroundColor: '#FFFFFF',
+              backgroundColor: '#021511',
             },
-            headerTintColor: '#007AFF',
+            headerTintColor: '#D4BA7F',
             headerTitleStyle: {
               fontWeight: 'bold',
             },
@@ -38,14 +41,24 @@ function App() {
             options={{ headerShown: false }}
           />
           <Stack.Screen
+            name="BiometricLogin"
+            component={BiometricLoginScreen}
+            options={{ headerShown: false }}
+          />
+          <Stack.Screen
             name="Home"
             component={HomeScreen}
-            options={{ title: 'Dashboard' }}
+            options={{ headerShown: false }}
           />
           <Stack.Screen
             name="Details"
             component={DetailsScreen}
             options={{ title: 'Explore' }}
+          />
+          <Stack.Screen
+            name="SupportChat"
+            component={SupportChatScreen}
+            options={{ headerShown: false }}
           />
         </Stack.Navigator>
       </NavigationContainer>

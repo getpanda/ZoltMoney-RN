@@ -17,6 +17,7 @@ import {
 import PhoneInput from 'react-native-phone-number-input';
 import { COLORS } from '../theme/colors';
 import { loginInit, loginVerify } from '../api/auth';
+import { StorageService } from '../services/StorageService';
 
 const LoginScreen = ({ navigation }: any) => {
     const [value, setValue] = useState('');
@@ -53,9 +54,31 @@ const LoginScreen = ({ navigation }: any) => {
         setLoading(true);
         try {
             const data = await loginVerify(formattedValue, otp);
-            // Success! We'll handle tokens and navigation here
+
+            // Persist session data and wallet type from panda-web response
+            if (data.token || data.access_token) {
+                const token = data.token || data.access_token;
+                await StorageService.setItem(StorageService.KEYS.AUTH_TOKEN, token);
+            }
+            await StorageService.setItem(StorageService.KEYS.PHONE_NUMBER, formattedValue);
+
+            // Handle onboarding/wallet info
+            const onboarding = data.onboarding;
+            const walletType = onboarding?.wallet_type || 'custodial';
+            await StorageService.setItem('@wallet_type', walletType);
+
             console.log('Login Success:', data);
-            navigation.navigate('Home');
+
+            // Navigate based on onboarding state or re-auth needs
+            const isReturningUser = onboarding?.flow === 'login' || data.signupStep === 'complete';
+
+            if (isReturningUser) {
+                // If it's a returning user, panda-web flow requires biometric re-auth
+                navigation.replace('BiometricLogin');
+            } else {
+                // New user flow: navigate to Home (or onboarding steps if they existed)
+                navigation.replace('Home');
+            }
         } catch (error: any) {
             Alert.alert('Error', error.response?.data?.message || 'Invalid OTP. Please try again.');
         } finally {

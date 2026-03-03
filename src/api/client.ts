@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Base URL from the PandaMoney 'refactor' configuration
-const API_BASE_URL = 'https://core-dev.getpanda.money';
+const API_BASE_URL = 'https://polaris-dev.getpanda.money/api/v1';
 
 const client = axios.create({
     baseURL: API_BASE_URL,

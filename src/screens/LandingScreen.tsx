@@ -10,7 +10,18 @@ import {
 } from 'react-native';
 import { COLORS } from '../theme/colors';
 
+import { StorageService } from '../services/StorageService';
+
 const LandingScreen = ({ navigation }: any) => {
+    const handleLoginNavigation = async () => {
+        const isBiometricEnabled = await StorageService.getItem(StorageService.KEYS.BIOMETRIC_ENABLED);
+        if (isBiometricEnabled === 'true') {
+            navigation.navigate('BiometricLogin');
+        } else {
+            navigation.navigate('Login');
+        }
+    };
+
     return (
         <ImageBackground
             source={require('../assets/images/landing_bg.png')}
@@ -38,14 +49,14 @@ const LandingScreen = ({ navigation }: any) => {
                 <View style={styles.footer}>
                     <TouchableOpacity
                         style={styles.primaryButton}
-                        onPress={() => navigation.navigate('Login')}
+                        onPress={handleLoginNavigation}
                     >
                         <Text style={styles.buttonText}>Get Started</Text>
                     </TouchableOpacity>
 
                     <TouchableOpacity
                         style={styles.secondaryButton}
-                        onPress={() => navigation.navigate('Login')}
+                        onPress={handleLoginNavigation}
                     >
                         <Text style={styles.secondaryButtonText}>Login to existing account</Text>
                     </TouchableOpacity>

@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { COLORS } from '../theme/colors';
 import { emailOtpInit } from '../api/auth';
+import { StorageService } from '../services/StorageService';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -41,7 +42,8 @@ const EmailVerifyScreen = ({ navigation }: any) => {
     const handleSendOtp = async () => {
         setLoading(true);
         try {
-            await emailOtpInit(email.trim());
+            const nonceId = await StorageService.getItem(StorageService.KEYS.NONCE_ID);
+            await emailOtpInit(email.trim(), nonceId);
             navigation.navigate('EmailOtpVerify', { email: email.trim() });
         } catch (error: any) {
             Alert.alert('Error', getApiErrorMessage(error, 'Failed to send OTP. Please try again.'));
@@ -60,9 +62,6 @@ const EmailVerifyScreen = ({ navigation }: any) => {
                 >
                     {/* Header icons */}
                     <View style={styles.topRow}>
-                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                            <Text style={styles.backButtonText}>←</Text>
-                        </TouchableOpacity>
                         <View style={styles.topRightIcons}>
                             <TouchableOpacity style={styles.iconButton}>
                                 <Text style={styles.iconText}>◎</Text>
@@ -138,7 +137,7 @@ const styles = StyleSheet.create({
     topRow: {
         marginTop: 12,
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'flex-end',
         alignItems: 'center',
         marginBottom: 32,
     },

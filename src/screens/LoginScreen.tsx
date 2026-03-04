@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo } from 'react';
+import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
 import {
     View,
     Text,
@@ -33,6 +33,33 @@ const LoginScreen = ({ navigation }: any) => {
     const [isPhoneValid, setIsPhoneValid] = useState(false);
 
     const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+
+    // OTP state
+    const otpInputRef = useRef<TextInput>(null);
+    const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
+    const [resendTimer, setResendTimer] = useState(60);
+    const [canResend, setCanResend] = useState(false);
+    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+    const startResendTimer = useCallback(() => {
+        setResendTimer(60);
+        setCanResend(false);
+        if (timerRef.current) clearInterval(timerRef.current);
+        timerRef.current = setInterval(() => {
+            setResendTimer(prev => {
+                if (prev <= 1) {
+                    if (timerRef.current) clearInterval(timerRef.current);
+                    setCanResend(true);
+                    return 0;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+    }, []);
+
+    useEffect(() => {
+        return () => { if (timerRef.current) clearInterval(timerRef.current); };
+    }, []);
 
     const phoneInput = useRef<PhoneInput>(null);
     const [isCountryPickerVisible, setIsCountryPickerVisible] = useState(false);
@@ -97,16 +124,24 @@ const LoginScreen = ({ navigation }: any) => {
         );
     }, [countrySearch]);
 
+    const getApiErrorMessage = (error: any, fallback: string): string => {
+        const data = error?.response?.data;
+        if (!data) return fallback;
+        // Return exact message from API response
+        return data.message || data.error || fallback;
+    };
+
     const handleSendOtp = async () => {
-        // Validated reactively via button state
-
-
         setLoading(true);
         try {
             await loginInit(formattedValue);
             setStep('otp');
+            setOtpDigits(['', '', '', '', '', '']);
+            setOtp('');
+            startResendTimer();
+            setTimeout(() => otpInputRef.current?.focus(), 300);
         } catch (error: any) {
-            Alert.alert('Error', error.response?.data?.message || 'Failed to send OTP. Please try again.');
+            Alert.alert('Error', getApiErrorMessage(error, 'Failed to send OTP. Please try again.'));
         } finally {
             setLoading(false);
         }
@@ -160,7 +195,7 @@ const LoginScreen = ({ navigation }: any) => {
                 navigation.replace('Home');
             }
         } catch (error: any) {
-            Alert.alert('Error', error.response?.data?.message || 'Invalid OTP. Please try again.');
+            Alert.alert('Error', getApiErrorMessage(error, 'Invalid OTP. Please try again.'));
         } finally {
             setLoading(false);
         }
@@ -330,36 +365,86 @@ const LoginScreen = ({ navigation }: any) => {
                             </View>
                         ) : (
                             <View style={styles.otpInputWrapper}>
+                                {/* Hidden TextInput to capture keystrokes */}
                                 <TextInput
-                                    style={styles.otpInput}
-                                    placeholder="000 000"
-                                    placeholderTextColor="rgba(255,255,255,0.3)"
+                                    ref={otpInputRef}
+                                    style={styles.hiddenOtpInput}
                                     keyboardType="number-pad"
                                     maxLength={6}
                                     value={otp}
-                                    selectionColor={COLORS.primary}
-                                    onChangeText={setOtp}
+                                    caretHidden
+                                    onChangeText={(text) => {
+                                        const cleaned = text.replace(/[^0-9]/g, '').slice(0, 6);
+                                        setOtp(cleaned);
+                                        const digits = cleaned.split('');
+                                        setOtpDigits([
+                                            digits[0] || '',
+                                            digits[1] || '',
+                                            digits[2] || '',
+                                            digits[3] || '',
+                                            digits[4] || '',
+                                            digits[5] || '',
+                                        ]);
+                                    }}
                                     autoFocus
                                 />
+
+                                {/* 6 visual digit boxes */}
+                                <TouchableWithoutFeedback onPress={() => otpInputRef.current?.focus()}>
+                                    <View style={styles.otpBoxesRow}>
+                                        {otpDigits.map((digit, i) => (
+                                            <View
+                                                key={i}
+                                                style={[
+                                                    styles.otpBox,
+                                                    otp.length === i && styles.otpBoxFocused,
+                                                ]}
+                                            >
+                                                <Text style={styles.otpBoxText}>{digit}</Text>
+                                            </View>
+                                        ))}
+                                    </View>
+                                </TouchableWithoutFeedback>
+
+                                {/* Resend row */}
+                                <View style={styles.resendRow}>
+                                    {canResend ? (
+                                        <TouchableOpacity onPress={() => { handleSendOtp(); }}>
+                                            <Text style={styles.resendText}>
+                                                Didn't receive a code?{' '}
+                                                <Text style={styles.resendLink}>Resend</Text>
+                                            </Text>
+                                        </TouchableOpacity>
+                                    ) : (
+                                        <Text style={styles.resendText}>
+                                            Didn't receive a code? Resend in{' '}
+                                            <Text style={styles.resendCountdown}>
+                                                {String(Math.floor(resendTimer / 60)).padStart(2, '0')}:{String(resendTimer % 60).padStart(2, '0')}
+                                            </Text>
+                                        </Text>
+                                    )}
+                                </View>
                             </View>
                         )}
 
                         <View style={styles.flexFiller} />
 
                         <View style={styles.bottomSection}>
-                            <TouchableOpacity
-                                style={styles.termsRow}
-                                onPress={() => setIsTermsAccepted(!isTermsAccepted)}
-                            >
-                                <View style={[styles.checkbox, isTermsAccepted && styles.checkboxChecked]}>
-                                    {isTermsAccepted && <Text style={styles.checkmark}>✓</Text>}
-                                </View>
-                                <Text style={styles.termsText}>
-                                    By Continuing, you agree to our{' '}
-                                    <Text style={styles.linkText}>Terms of Use</Text> and{' '}
-                                    <Text style={styles.linkText}>Privacy Policy</Text>.
-                                </Text>
-                            </TouchableOpacity>
+                            {step === 'phone' && (
+                                <TouchableOpacity
+                                    style={styles.termsRow}
+                                    onPress={() => setIsTermsAccepted(!isTermsAccepted)}
+                                >
+                                    <View style={[styles.checkbox, isTermsAccepted && styles.checkboxChecked]}>
+                                        {isTermsAccepted && <Text style={styles.checkmark}>✓</Text>}
+                                    </View>
+                                    <Text style={styles.termsText}>
+                                        By Continuing, you agree to our{' '}
+                                        <Text style={styles.linkText}>Terms of Use</Text> and{' '}
+                                        <Text style={styles.linkText}>Privacy Policy</Text>.
+                                    </Text>
+                                </TouchableOpacity>
+                            )}
 
                             <TouchableOpacity
                                 style={[
@@ -397,19 +482,10 @@ const LoginScreen = ({ navigation }: any) => {
                                             <Text style={styles.socialIcon}>G</Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={styles.socialButton}>
-                                            <Text style={styles.socialIcon}></Text>
+                                            <Text style={styles.socialIcon}></Text>
                                         </TouchableOpacity>
                                     </View>
                                 </View>
-                            )}
-
-                            {step === 'otp' && (
-                                <TouchableOpacity
-                                    style={styles.resendButton}
-                                    onPress={handleSendOtp}
-                                >
-                                    <Text style={styles.resendText}>Didn't receive code? Resend</Text>
-                                </TouchableOpacity>
                             )}
                         </View>
                     </View>
@@ -532,17 +608,54 @@ const styles = StyleSheet.create({
         lineHeight: 25,
     },
     otpInputWrapper: {
-        marginTop: 40,
+        width: '100%',
+    },
+    hiddenOtpInput: {
+        position: 'absolute',
+        opacity: 0,
+        width: 0,
+        height: 0,
+    },
+    otpBoxesRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginTop: 32,
+    },
+    otpBox: {
+        width: 50,
+        height: 60,
+        borderRadius: 10,
+        borderWidth: 1.5,
+        borderColor: 'rgba(212, 186, 127, 0.30)',
+        backgroundColor: 'rgba(255, 255, 255, 0.05)',
+        justifyContent: 'center',
         alignItems: 'center',
     },
-    otpInput: {
-        height: 80,
-        width: '100%',
-        color: COLORS.white,
-        fontSize: 42,
+    otpBoxFocused: {
+        borderColor: COLORS.primary,
+        borderWidth: 2,
+    },
+    otpBoxText: {
+        color: COLORS.primary,
+        fontSize: 24,
         fontWeight: '600',
-        letterSpacing: 10,
+    },
+    resendRow: {
+        marginTop: 24,
+        alignItems: 'center',
+    },
+    resendText: {
+        color: 'rgba(255, 255, 255, 0.55)',
+        fontSize: 14,
         textAlign: 'center',
+    },
+    resendLink: {
+        color: COLORS.primary,
+        fontWeight: '600',
+    },
+    resendCountdown: {
+        color: COLORS.primary,
     },
     flexFiller: {
         flex: 1,
@@ -661,15 +774,6 @@ const styles = StyleSheet.create({
         color: COLORS.white,
         fontSize: 22,
         fontWeight: '500',
-    },
-    resendButton: {
-        marginTop: 20,
-        alignItems: 'center',
-    },
-    resendText: {
-        color: COLORS.primary,
-        fontSize: 14,
-        fontWeight: '600',
     },
     countrySearchContainer: {
         paddingHorizontal: 16,

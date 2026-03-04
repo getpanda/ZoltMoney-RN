@@ -97,11 +97,22 @@ const OtpScreen = ({ navigation, route }: any) => {
             await StorageService.setItem(StorageService.KEYS.PHONE_NUMBER, formattedValue);
 
             const onboarding = data.onboarding;
-            const walletType = onboarding?.wallet_type || 'custodial';
-            await StorageService.setItem('@wallet_type', walletType);
+            if (onboarding) {
+                const walletType = onboarding.wallet_type || 'custodial';
+                await StorageService.setItem('@wallet_type', walletType);
+                await StorageService.setItem(StorageService.KEYS.ONBOARDING_STEP, onboarding.step || 'complete');
+                await StorageService.setItem(StorageService.KEYS.ONBOARDING_FLOW, onboarding.flow || 'login');
 
-            // Navigate to email verification step
-            navigation.navigate('EmailVerify');
+                // Route based on flow type
+                if (onboarding.flow === 'login') {
+                    navigation.navigate('BiometricLogin');
+                } else {
+                    navigation.navigate('EmailVerify');
+                }
+            } else {
+                // Legacy fallback: assuming new user if no onboarding data
+                navigation.navigate('EmailVerify');
+            }
         } catch (error: any) {
             Alert.alert('Error', getApiErrorMessage(error, 'Invalid OTP. Please try again.'));
         } finally {

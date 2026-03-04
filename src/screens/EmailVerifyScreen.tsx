@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { COLORS } from '../theme/colors';
 import { emailOtpInit } from '../api/auth';
+import { StorageService } from '../services/StorageService';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -37,6 +38,27 @@ const EmailVerifyScreen = ({ navigation }: any) => {
     }, []);
 
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+
+    const handleLogout = async () => {
+        Alert.alert(
+            'Logout',
+            'Are you sure you want to logout? This will reset your onboarding progress.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Logout',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await StorageService.logout();
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Landing' }],
+                        });
+                    },
+                },
+            ]
+        );
+    };
 
     const handleSendOtp = async () => {
         setLoading(true);
@@ -60,6 +82,9 @@ const EmailVerifyScreen = ({ navigation }: any) => {
                 >
                     {/* Header icons */}
                     <View style={styles.topRow}>
+                        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                            <Text style={styles.logoutText}>Logout</Text>
+                        </TouchableOpacity>
                         <View style={styles.topRightIcons}>
                             <TouchableOpacity style={styles.iconButton}>
                                 <Text style={styles.iconText}>◎</Text>
@@ -135,9 +160,18 @@ const styles = StyleSheet.create({
     topRow: {
         marginTop: 12,
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 32,
+    },
+    logoutButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+    },
+    logoutText: {
+        color: COLORS.primary,
+        fontSize: 15,
+        fontWeight: '600',
     },
     backButton: {
         padding: 4,

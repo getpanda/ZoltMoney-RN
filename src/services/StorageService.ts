@@ -6,6 +6,8 @@ const KEYS = {
     PHONE_NUMBER: '@phone_number',
     AUTH_TOKEN: '@auth_token',
     REFRESH_TOKEN: '@refresh_token',
+    ONBOARDING_STEP: '@onboarding_step',
+    ONBOARDING_FLOW: '@onboarding_flow',
 };
 
 export const StorageService = {
@@ -41,6 +43,8 @@ export const StorageService = {
             KEYS.BIOMETRIC_ENABLED,
             KEYS.USER_ID,
             KEYS.PHONE_NUMBER,
+            KEYS.ONBOARDING_STEP,
+            KEYS.ONBOARDING_FLOW,
             '@wallet_type',
             '@credential_id',
         ];

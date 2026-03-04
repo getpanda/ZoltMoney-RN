@@ -16,6 +16,7 @@ import {
 } from 'react-native';
 import { COLORS } from '../theme/colors';
 import { emailOtpInit, emailOtpVerify } from '../api/auth';
+import { StorageService } from '../services/StorageService';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -75,6 +76,27 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
         return () => { if (timerRef.current) clearInterval(timerRef.current); };
     }, [startResendTimer]);
 
+    const handleLogout = async () => {
+        Alert.alert(
+            'Logout',
+            'Are you sure you want to logout? This will reset your onboarding progress.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Logout',
+                    style: 'destructive',
+                    onPress: async () => {
+                        await StorageService.logout();
+                        navigation.reset({
+                            index: 0,
+                            routes: [{ name: 'Landing' }],
+                        });
+                    },
+                },
+            ]
+        );
+    };
+
     const handleResend = async () => {
         setLoading(true);
         try {
@@ -117,10 +139,13 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
                     style={styles.inner}
                 >
-                    {/* Top row: back + support */}
+                    {/* Top row: back + logout + support */}
                     <View style={styles.topRow}>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
                             <Text style={styles.backText}>←</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
+                            <Text style={styles.logoutText}>Logout</Text>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.supportIcon}>
                             <Text style={styles.supportEmoji}>🎧</Text>
@@ -237,6 +262,15 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 28,
+    },
+    logoutButton: {
+        paddingVertical: 6,
+        paddingHorizontal: 12,
+    },
+    logoutText: {
+        color: COLORS.primary,
+        fontSize: 15,
+        fontWeight: '600',
     },
     backButton: {
         padding: 4,

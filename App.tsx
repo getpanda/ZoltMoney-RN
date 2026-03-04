@@ -26,7 +26,23 @@ const Stack = createNativeStackNavigator();
  */
 async function getInitialRoute(): Promise<string> {
   const token = await StorageService.getItem(StorageService.KEYS.AUTH_TOKEN);
-  return token ? 'BiometricLogin' : 'Landing';
+  if (!token) return 'Landing';
+
+  const step = await StorageService.getItem(StorageService.KEYS.ONBOARDING_STEP);
+  const flow = await StorageService.getItem(StorageService.KEYS.ONBOARDING_FLOW);
+
+  // If onboarding is complete or it's a login flow, go to biometric re-auth
+  if (step === 'complete' || flow === 'login') {
+    return 'BiometricLogin';
+  }
+
+  // Resume onboarding steps
+  if (step === 'verify_email' || step === 'verifyEmail') {
+    return 'EmailVerify';
+  }
+
+  // Default fallback for authenticated users
+  return 'BiometricLogin';
 }
 
 function App() {

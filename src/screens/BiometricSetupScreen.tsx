@@ -27,6 +27,8 @@ const BiometricSetupScreen = ({ navigation }: any) => {
             const publicKey = await BiometricService.createKeys();
             if (publicKey) {
                 await StorageService.setItem('@biometric_enabled', 'true');
+                // Mark session as verified to prevent immediate re-auth prompt on Home landing
+                await StorageService.setItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED, '1');
                 navigation.replace('Home');
             } else {
                 Alert.alert('Setup Failed', 'Biometric setup was cancelled or failed. Please try again.');

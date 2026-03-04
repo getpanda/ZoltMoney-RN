@@ -46,7 +46,8 @@ const BiometricLoginScreen = () => {
 
                 if (signature) {
                     console.log('Custodial Biometric Re-auth Success');
-                    // In panda-web this sets local flags/cookies via markAuthenticated
+                    // Mark session as verified to prevent AppState listener loop
+                    await StorageService.setItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED, '1');
                     await markAuthenticated();
                     navigation.replace('Home');
                 } else {
@@ -87,6 +88,8 @@ const BiometricLoginScreen = () => {
 
                     if (loginRes.access_token) {
                         await StorageService.setItem(StorageService.KEYS.AUTH_TOKEN, loginRes.access_token);
+                        // Mark session as verified
+                        await StorageService.setItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED, '1');
                         console.log('Passkey Login Success');
                         navigation.replace('Home');
                     } else {

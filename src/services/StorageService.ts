@@ -8,6 +8,7 @@ const KEYS = {
     REFRESH_TOKEN: '@refresh_token',
     ONBOARDING_STEP: '@onboarding_step',
     ONBOARDING_FLOW: '@onboarding_flow',
+    SESSION_BIOMETRIC_VERIFIED: '@session_biometric_verified',
 };
 
 export const StorageService = {

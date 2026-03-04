@@ -28,6 +28,12 @@ async function getInitialRoute(): Promise<string> {
   const token = await StorageService.getItem(StorageService.KEYS.AUTH_TOKEN);
   if (!token) return 'Landing';
 
+  // Check if biometric re-auth was already done for this session
+  const sessionVerified = await StorageService.getItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED);
+  if (sessionVerified === '1') {
+    return 'Home';
+  }
+
   const step = await StorageService.getItem(StorageService.KEYS.ONBOARDING_STEP);
   const flow = await StorageService.getItem(StorageService.KEYS.ONBOARDING_FLOW);
 
@@ -49,16 +55,11 @@ function App() {
   const [initialRoute, setInitialRoute] = useState<string | null>(null);
   const navigationRef = useRef<NavigationContainerRef<any>>(null);
   const appState = useRef<AppStateStatus>(AppState.currentState);
-  // Track whether the user is fully authenticated in this session
-  const isAuthenticated = useRef(false);
 
   // ── Step 1: Determine initial route ──
   useEffect(() => {
     getInitialRoute().then(route => {
       setInitialRoute(route);
-      if (route === 'BiometricLogin') {
-        isAuthenticated.current = false; // will be set true after biometric success
-      }
     });
   }, []);
 
@@ -68,12 +69,19 @@ function App() {
       const prev = appState.current;
       appState.current = nextState;
 
+      // When app goes to background, clear the session verification flag
+      // so it re-locks next time it's opened.
+      if (nextState === 'background') {
+        await StorageService.removeItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED);
+      }
+
       // When app comes back to foreground from background/inactive
       if ((prev === 'background' || prev === 'inactive') && nextState === 'active') {
         const token = await StorageService.getItem(StorageService.KEYS.AUTH_TOKEN);
-        if (token && navigationRef.current) {
+        const sessionVerified = await StorageService.getItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED);
+
+        if (token && sessionVerified !== '1' && navigationRef.current) {
           // Re-lock: send user to biometric gate
-          isAuthenticated.current = false;
           navigationRef.current.navigate('BiometricLogin');
         }
       }

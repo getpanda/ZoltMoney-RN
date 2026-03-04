@@ -37,10 +37,7 @@ export const loginVerify = async (fullMobileNumber: string, otp: string, country
         turnstile_token: null,
     };
     const response = await client.post('user/verify-otp', payload);
-    return {
-        ...response.data,
-        nonceId: response.headers['x-nonce-id'] || response.headers['nonce_id'],
-    };
+    return response.data;
 };
 
 /**
@@ -103,12 +100,11 @@ export const getExchangeRate = async (sourceCurrency: string, targetCurrency: st
  * Sends an OTP to the user's email address.
  * Matches panda-web: POST user/send-email-otp
  */
-export const emailOtpInit = async (email: string, nonceId?: string | null) => {
+export const emailOtpInit = async (email: string) => {
     const payload = {
         email: encodeStringToReversedHex(email),
     };
-    const headers = nonceId ? { 'x-nonce-id': nonceId } : {};
-    const response = await client.post('user/send-email-otp', payload, { headers });
+    const response = await client.post('user/send-email-otp', payload);
     return response.data;
 };
 
@@ -117,12 +113,11 @@ export const emailOtpInit = async (email: string, nonceId?: string | null) => {
  * Matches panda-web: POST user/verify-email-otp
  * Response: { result: 'success' | 'failure' }
  */
-export const emailOtpVerify = async (email: string, passcode: string, nonceId?: string | null) => {
+export const emailOtpVerify = async (email: string, passcode: string) => {
     const payload = {
         email: encodeStringToReversedHex(email),
         passcode: encodeStringToReversedHex(passcode),
     };
-    const headers = nonceId ? { 'x-nonce-id': nonceId } : {};
-    const response = await client.post('user/verify-email-otp', payload, { headers });
+    const response = await client.post('user/verify-email-otp', payload);
     return response.data;
 };

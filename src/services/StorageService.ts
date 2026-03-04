@@ -6,7 +6,6 @@ const KEYS = {
     PHONE_NUMBER: '@phone_number',
     AUTH_TOKEN: '@auth_token',
     REFRESH_TOKEN: '@refresh_token',
-    NONCE_ID: '@nonce_id',
 };
 
 export const StorageService = {

@@ -94,9 +94,6 @@ const OtpScreen = ({ navigation, route }: any) => {
                 const token = data.token || data.access_token;
                 await StorageService.setItem(StorageService.KEYS.AUTH_TOKEN, token);
             }
-            if (data.nonceId) {
-                await StorageService.setItem(StorageService.KEYS.NONCE_ID, data.nonceId);
-            }
             await StorageService.setItem(StorageService.KEYS.PHONE_NUMBER, formattedValue);
 
             const onboarding = data.onboarding;

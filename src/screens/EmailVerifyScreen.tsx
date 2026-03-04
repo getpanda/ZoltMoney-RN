@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import { COLORS } from '../theme/colors';
 import { emailOtpInit } from '../api/auth';
-import { StorageService } from '../services/StorageService';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -42,8 +41,7 @@ const EmailVerifyScreen = ({ navigation }: any) => {
     const handleSendOtp = async () => {
         setLoading(true);
         try {
-            const nonceId = await StorageService.getItem(StorageService.KEYS.NONCE_ID);
-            await emailOtpInit(email.trim(), nonceId);
+            await emailOtpInit(email.trim());
             navigation.navigate('EmailOtpVerify', { email: email.trim() });
         } catch (error: any) {
             Alert.alert('Error', getApiErrorMessage(error, 'Failed to send OTP. Please try again.'));

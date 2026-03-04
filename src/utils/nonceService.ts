@@ -5,33 +5,54 @@
  * Generates x-nonce-id JWT header required by the PandaMoney backend.
  * Mirrors panda-web generateNonce() — HS256 JWT signed with the NONCE_SECRET.
  *
- * Uses pure-JS SHA-256 + HMAC (no SubtleCrypto dependency) to guarantee
- * compatibility with all Hermes versions in React Native.
+ * Self-contained: Includes pure JS SHA-256, HMAC, Base64, and UUID.
+ * Zero external global dependencies (no SubtleCrypto, no TextEncoder, no btoa required).
  */
 
-// NONCE_SECRET from AWS Secrets Manager (auth/dev/v1/keys/nonce)
 const NONCE_SECRET = 'sc+hrY0QeEHY+W0eFLmZGUFz7nP9vEQpD4Nn1WOfCEE=';
 
-// ─── Pure-JS SHA-256 ──────────────────────────────────────────────────────────
+// ─── Constants ───────────────────────────────────────────────────────────────
 const K = [
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-    0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
-    0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
-    0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
-    0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
-    0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
 ];
 
+// ─── Base64 ──────────────────────────────────────────────────────────────────
+const b64chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
+
+function jsBtoa(input: string): string {
+    let str = input;
+    let output = '';
+    for (
+        let block = 0, charCode, i = 0, map = b64chars;
+        str.charAt(i | 0) || (map = '=', i % 1);
+        output += map.charAt(63 & block >> 8 - i % 1 * 8)
+    ) {
+        charCode = str.charCodeAt(i += 3 / 4);
+        if (charCode > 0xFF) throw new Error("'btoa' failed: The string to be encoded contains characters outside of the Latin1 range.");
+        block = block << 8 | charCode;
+    }
+    return output;
+}
+
+function base64urlEncode(data: Uint8Array): string {
+    let binary = '';
+    for (let i = 0; i < data.byteLength; i++) {
+        binary += String.fromCharCode(data[i]);
+    }
+    return jsBtoa(binary)
+        .replace(/\+/g, '-')
+        .replace(/\//g, '_')
+        .replace(/=/g, '');
+}
+
+// ─── SHA-256 Core ────────────────────────────────────────────────────────────
 function rotr32(x: number, n: number): number {
     return ((x >>> n) | (x << (32 - n))) >>> 0;
 }
@@ -41,7 +62,8 @@ function sha256(data: Uint8Array): Uint8Array {
     const bitLen = msg.length * 8;
     msg.push(0x80);
     while (msg.length % 64 !== 56) msg.push(0);
-    // Append bit length as 64-bit BIG-endian (high 32 bits are 0 for JS-sized messages)
+
+    // Append bit length as 64-bit BIG-endian
     for (let i = 7; i >= 0; i--) {
         msg.push(i >= 4 ? 0 : (bitLen >>> (i * 8)) & 0xff);
     }
@@ -110,7 +132,7 @@ function hmacSha256(key: Uint8Array, data: Uint8Array): Uint8Array {
     return sha256(outer);
 }
 
-// ─── Helpers ──────────────────────────────────────────────────────────────────
+// ─── App Logic ───────────────────────────────────────────────────────────────
 
 function strToBytes(str: string): Uint8Array {
     const bytes = new Uint8Array(str.length);
@@ -118,44 +140,48 @@ function strToBytes(str: string): Uint8Array {
     return bytes;
 }
 
-function base64urlEncode(data: Uint8Array): string {
-    let binary = '';
-    for (let i = 0; i < data.byteLength; i++) binary += String.fromCharCode(data[i]);
-    return btoa(binary).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
-
 function randomUUID(): string {
     const bytes = new Uint8Array(16);
-    crypto.getRandomValues(bytes);
-    bytes[6] = (bytes[6] & 0x0f) | 0x40;
-    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    // Use Math.random if global crypto is not available
+    const cr = (globalThis as any).crypto;
+    if (cr && cr.getRandomValues) {
+        cr.getRandomValues(bytes);
+    } else {
+        for (let i = 0; i < 16; i++) bytes[i] = Math.floor(Math.random() * 256);
+    }
+    bytes[6] = (bytes[6] & 0x0f) | 0x40; // v4
+    bytes[8] = (bytes[8] & 0x3f) | 0x80; // variant 10
     const hex = Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('');
     return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`;
 }
 
-// ─── Public API ───────────────────────────────────────────────────────────────
-
 /**
- * Generates the x-nonce-id header value — an HS256 JWT signed with
- * NONCE_SECRET. Fresh per request; expires in 120 seconds.
+ * Generates the x-nonce-id header value.
+ * Fresh per request; expires in 120 seconds.
  */
 export function generateNonce(): string {
-    const now = Math.floor(Date.now() / 1000);
-    const header = { alg: 'HS256', typ: 'JWT' };
-    const payload = {
-        payload: { nonce_id: randomUUID() },
-        subject: 'nonce',
-        iat: now,
-        exp: now + 120,
-    };
+    try {
+        const now = Math.floor(Date.now() / 1000);
+        const header = { alg: 'HS256', typ: 'JWT' };
+        const payload = {
+            payload: { nonce_id: randomUUID() },
+            subject: 'nonce',
+            iat: now,
+            exp: now + 120,
+        };
 
-    const headerB64 = base64urlEncode(strToBytes(JSON.stringify(header)));
-    const payloadB64 = base64urlEncode(strToBytes(JSON.stringify(payload)));
-    const signingInput = `${headerB64}.${payloadB64}`;
+        const headerB64 = base64urlEncode(strToBytes(JSON.stringify(header)));
+        const payloadB64 = base64urlEncode(strToBytes(JSON.stringify(payload)));
+        const signingInput = `${headerB64}.${payloadB64}`;
 
-    const keyBytes = strToBytes(NONCE_SECRET);
-    const dataBytes = strToBytes(signingInput);
-    const sig = hmacSha256(keyBytes, dataBytes);
+        const keyBytes = strToBytes(NONCE_SECRET);
+        const dataBytes = strToBytes(signingInput);
+        const sig = hmacSha256(keyBytes, dataBytes);
 
-    return `${signingInput}.${base64urlEncode(sig)}`;
+        const nonce = `${signingInput}.${base64urlEncode(sig)}`;
+        return nonce;
+    } catch (error) {
+        console.error('[nonceService] Error generating nonce:', error);
+        return '';
+    }
 }

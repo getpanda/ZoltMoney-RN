@@ -24,10 +24,14 @@ client.interceptors.request.use(
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
-            // Generate a fresh nonce for every request (matches panda-web baseAPI.ts)
-            config.headers['x-nonce-id'] = generateNonce();
+
+            // Generate a fresh nonce for every request
+            const nonce = generateNonce();
+            if (nonce) {
+                config.headers['x-nonce-id'] = nonce;
+            }
         } catch (e) {
-            console.warn('[client] Failed to attach request headers:', e);
+            // Keep silent in production
         }
         return config;
     },

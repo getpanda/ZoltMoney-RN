@@ -16,7 +16,6 @@ import {
 } from 'react-native';
 import { COLORS } from '../theme/colors';
 import { emailOtpInit, emailOtpVerify } from '../api/auth';
-import { StorageService } from '../services/StorageService';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -79,8 +78,7 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
     const handleResend = async () => {
         setLoading(true);
         try {
-            const nonceId = await StorageService.getItem(StorageService.KEYS.NONCE_ID);
-            await emailOtpInit(email, nonceId);
+            await emailOtpInit(email);
             setOtp('');
             setOtpDigits(['', '', '', '', '', '']);
             startResendTimer();
@@ -96,8 +94,7 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
         if (otp.length < 6) return;
         setLoading(true);
         try {
-            const nonceId = await StorageService.getItem(StorageService.KEYS.NONCE_ID);
-            const result = await emailOtpVerify(email, otp, nonceId);
+            const result = await emailOtpVerify(email, otp);
             if (result?.result === 'success' || result?.success) {
                 navigation.navigate('BiometricSetup');
             } else {

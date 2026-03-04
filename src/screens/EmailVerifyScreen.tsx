@@ -15,6 +15,7 @@ import {
     Alert,
 } from 'react-native';
 import { COLORS } from '../theme/colors';
+import { emailOtpInit } from '../api/auth';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -29,12 +30,9 @@ const EmailVerifyScreen = ({ navigation }: any) => {
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
     const handleSendOtp = async () => {
-        // TODO: wire to real email OTP API
         setLoading(true);
         try {
-            // await emailOtpInit(email.trim());
-            // Simulate for now
-            await new Promise<void>(res => setTimeout(() => res(), 800));
+            await emailOtpInit(email.trim());
             navigation.navigate('EmailOtpVerify', { email: email.trim() });
         } catch (error: any) {
             Alert.alert('Error', getApiErrorMessage(error, 'Failed to send OTP. Please try again.'));

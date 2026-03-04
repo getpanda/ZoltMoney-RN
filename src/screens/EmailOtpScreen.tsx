@@ -15,6 +15,7 @@ import {
     Alert,
 } from 'react-native';
 import { COLORS } from '../theme/colors';
+import { emailOtpInit, emailOtpVerify } from '../api/auth';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -77,8 +78,7 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
     const handleResend = async () => {
         setLoading(true);
         try {
-            // TODO: await emailOtpInit(email);
-            await new Promise<void>(res => setTimeout(() => res(), 800));
+            await emailOtpInit(email);
             setOtp('');
             setOtpDigits(['', '', '', '', '', '']);
             startResendTimer();
@@ -94,9 +94,12 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
         if (otp.length < 6) return;
         setLoading(true);
         try {
-            // TODO: await emailOtpVerify(email, otp);
-            await new Promise<void>(res => setTimeout(() => res(), 800));
-            navigation.navigate('BiometricSetup');
+            const result = await emailOtpVerify(email, otp);
+            if (result?.result === 'success' || result?.success) {
+                navigation.navigate('BiometricSetup');
+            } else {
+                Alert.alert('Error', result?.error || 'Invalid OTP. Please try again.');
+            }
         } catch (error: any) {
             Alert.alert('Error', getApiErrorMessage(error, 'Invalid OTP. Please try again.'));
         } finally {

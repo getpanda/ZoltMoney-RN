@@ -95,3 +95,29 @@ export const getExchangeRate = async (sourceCurrency: string, targetCurrency: st
     );
     return response.data;
 };
+
+/**
+ * Sends an OTP to the user's email address.
+ * Matches panda-web: POST user/send-email-otp
+ */
+export const emailOtpInit = async (email: string) => {
+    const payload = {
+        email: encodeStringToReversedHex(email),
+    };
+    const response = await client.post('user/send-email-otp', payload);
+    return response.data;
+};
+
+/**
+ * Verifies the OTP sent to the user's email.
+ * Matches panda-web: POST user/verify-email-otp
+ * Response: { result: 'success' | 'failure' }
+ */
+export const emailOtpVerify = async (email: string, passcode: string) => {
+    const payload = {
+        email: encodeStringToReversedHex(email),
+        passcode: encodeStringToReversedHex(passcode),
+    };
+    const response = await client.post('user/verify-email-otp', payload);
+    return response.data;
+};

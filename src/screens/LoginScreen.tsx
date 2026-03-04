@@ -329,9 +329,11 @@ const LoginScreen = ({ navigation }: any) => {
                                     <TouchableOpacity style={styles.socialButton}>
                                         <Text style={styles.socialIcon}>G</Text>
                                     </TouchableOpacity>
-                                    <TouchableOpacity style={styles.socialButton}>
-                                        <Text style={styles.socialIcon}></Text>
-                                    </TouchableOpacity>
+                                    {Platform.OS === 'ios' && (
+                                        <TouchableOpacity style={styles.socialButton}>
+                                            <Text style={styles.socialIcon}></Text>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                             </View>
                         </View>

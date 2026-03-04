@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
     Text,
@@ -26,6 +26,15 @@ const getApiErrorMessage = (error: any, fallback: string): string => {
 const EmailVerifyScreen = ({ navigation }: any) => {
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
+    const emailInputRef = useRef<TextInput>(null);
+
+    useEffect(() => {
+        // Auto-focus email input on mount
+        const timer = setTimeout(() => {
+            emailInputRef.current?.focus();
+        }, 500);
+        return () => clearTimeout(timer);
+    }, []);
 
     const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
@@ -51,12 +60,12 @@ const EmailVerifyScreen = ({ navigation }: any) => {
                 >
                     {/* Header icons */}
                     <View style={styles.topRow}>
+                        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                            <Text style={styles.backButtonText}>←</Text>
+                        </TouchableOpacity>
                         <View style={styles.topRightIcons}>
                             <TouchableOpacity style={styles.iconButton}>
                                 <Text style={styles.iconText}>◎</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.iconButton}>
-                                <Text style={styles.iconText}>→</Text>
                             </TouchableOpacity>
                         </View>
                     </View>
@@ -72,6 +81,7 @@ const EmailVerifyScreen = ({ navigation }: any) => {
                     {/* Email Input */}
                     <View style={styles.inputWrapper}>
                         <TextInput
+                            ref={emailInputRef}
                             style={styles.input}
                             placeholder="Email"
                             placeholderTextColor="rgba(255,255,255,0.35)"
@@ -128,9 +138,16 @@ const styles = StyleSheet.create({
     topRow: {
         marginTop: 12,
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 32,
+    },
+    backButton: {
+        padding: 4,
+    },
+    backButtonText: {
+        color: COLORS.white,
+        fontSize: 26,
     },
     topRightIcons: {
         flexDirection: 'row',

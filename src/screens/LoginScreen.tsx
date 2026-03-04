@@ -27,6 +27,7 @@ const phoneUtil = PhoneNumberUtil.getInstance();
 const LoginScreen = ({ navigation }: any) => {
 
     const phoneInput = useRef<PhoneInput>(null);
+    const phoneNumberRef = useRef<TextInput>(null);
     const [isCountryPickerVisible, setIsCountryPickerVisible] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState({ name: 'India', code: 'IN', callingCode: '91', flag: '🇮🇳' });
     const [countrySearch, setCountrySearch] = useState('');
@@ -159,6 +160,7 @@ const LoginScreen = ({ navigation }: any) => {
                                 </TouchableOpacity>
 
                                 <TextInput
+                                    ref={phoneNumberRef}
                                     style={styles.customNumberInput}
                                     placeholder="201-555-0123"
                                     placeholderTextColor="rgba(212, 186, 127, 0.25)"
@@ -260,6 +262,8 @@ const LoginScreen = ({ navigation }: any) => {
                                                             setFormattedValue(`+${item.callingCode}${value}`);
                                                             setCountrySearch('');
                                                             setIsCountryPickerVisible(false);
+                                                            // Auto-focus phone input after modal closes
+                                                            setTimeout(() => phoneNumberRef.current?.focus(), 300);
                                                         }}
                                                     >
                                                         <Text style={styles.countryFlag}>{item.flag}</Text>

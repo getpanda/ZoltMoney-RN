@@ -44,6 +44,9 @@ const BiometricSetupScreen = ({ navigation }: any) => {
             <View style={styles.inner}>
                 {/* Top row - support icon */}
                 <View style={styles.topRow}>
+                    <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+                        <Text style={styles.backButtonText}>←</Text>
+                    </TouchableOpacity>
                     <View style={styles.topRightIcons}>
                         <TouchableOpacity style={styles.supportIcon}>
                             <Text style={styles.supportEmoji}>🎧</Text>
@@ -111,9 +114,16 @@ const styles = StyleSheet.create({
     topRow: {
         marginTop: 12,
         flexDirection: 'row',
-        justifyContent: 'flex-end',
+        justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 28,
+    },
+    backButton: {
+        padding: 4,
+    },
+    backButtonText: {
+        color: COLORS.white,
+        fontSize: 26,
     },
     topRightIcons: {
         flexDirection: 'row',

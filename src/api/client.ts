@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { generateNonce } from '../utils/nonceService';
 
 // Base URL from the PandaMoney 'refactor' configuration
 const API_BASE_URL = 'https://polaris-dev.getpanda.money/api/v1';
@@ -15,7 +16,7 @@ const client = axios.create({
     },
 });
 
-// Request interceptor — attach stored auth token automatically
+// Request interceptor — attach auth token and fresh x-nonce-id automatically
 client.interceptors.request.use(
     async (config) => {
         try {
@@ -23,6 +24,9 @@ client.interceptors.request.use(
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
+            // Generate a fresh nonce for every request (matches panda-web baseAPI.ts)
+            const nonce = await generateNonce();
+            config.headers['x-nonce-id'] = nonce;
         } catch (_) { }
         return config;
     },

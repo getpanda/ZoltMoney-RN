@@ -1,59 +1,69 @@
-import axios from 'axios';
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { generateNonce } from '../utils/nonceService';
 
-// Base URL from the PandaMoney 'refactor' configuration
-const API_BASE_URL = 'https://polaris-dev.getpanda.money/api/v1';
+// Backend Service URLs
+const POLARIS_BASE_URL = 'https://polaris-dev.getpanda.money/api/v1';
+const CASTOR_BASE_URL = 'https://castor-dev.getpanda.money/api/v1';
+const CARINA_BASE_URL = 'https://carina-dev.getpanda.money/api/v1';
 
-const client = axios.create({
-    baseURL: API_BASE_URL,
-    timeout: 15000,
-    headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-        'x-api-key-1': '36Kjh9MI4FANqEOw6xJBTec3uVe0dXnN',
-        'x-api-key-2': 'DVgcmRtZMrOA3EccCDjeIpDsZrCXwJDQ',
-    },
-});
+const DEFAULT_HEADERS = {
+    'Content-Type': 'application/json',
+    'Accept': 'application/json',
+    'x-api-key-1': '36Kjh9MI4FANqEOw6xJBTec3uVe0dXnN',
+    'x-api-key-2': 'DVgcmRtZMrOA3EccCDjeIpDsZrCXwJDQ',
+};
 
-// Request interceptor — attach auth token and fresh x-nonce-id automatically
-client.interceptors.request.use(
-    async (config) => {
-        try {
-            const token = await AsyncStorage.getItem('@auth_token');
-            if (token) {
-                config.headers.Authorization = `Bearer ${token}`;
+// specialized clients
+export const polarisClient = axios.create({ baseURL: POLARIS_BASE_URL, timeout: 15000, headers: DEFAULT_HEADERS });
+export const castorClient = axios.create({ baseURL: CASTOR_BASE_URL, timeout: 15000, headers: DEFAULT_HEADERS });
+export const carinaClient = axios.create({ baseURL: CARINA_BASE_URL, timeout: 10000, headers: DEFAULT_HEADERS });
+
+/**
+ * Shared interceptor to attach auth token and fresh x-nonce-id automatically.
+ */
+const setupInterceptors = (instance: AxiosInstance) => {
+    instance.interceptors.request.use(
+        async (config: InternalAxiosRequestConfig) => {
+            try {
+                const token = await AsyncStorage.getItem('@auth_token');
+                if (token) {
+                    config.headers.Authorization = `Bearer ${token}`;
+                }
+
+                // Generate a fresh nonce for every request
+                const nonce = generateNonce();
+                if (nonce) {
+                    config.headers['x-nonce-id'] = nonce;
+                }
+            } catch (e) {
+                // Keep silent in production
             }
+            return config;
+        },
+        (error) => Promise.reject(error)
+    );
 
-            // Generate a fresh nonce for every request
-            const nonce = generateNonce();
-            if (nonce) {
-                config.headers['x-nonce-id'] = nonce;
+    instance.interceptors.response.use(
+        (response) => response,
+        (error) => {
+            const config = error.config;
+            if (error.response) {
+                console.error(`[API Error] ${config?.method?.toUpperCase()} ${config?.url}:`, error.response.status, error.response.data);
+            } else if (error.request) {
+                console.error(`[Network Error] ${config?.method?.toUpperCase()} ${config?.url}:`, error.message);
+            } else {
+                console.error('[Request Error]:', error.message);
             }
-        } catch (e) {
-            // Keep silent in production
+            return Promise.reject(error);
         }
-        return config;
-    },
-    (error) => Promise.reject(error)
-);
+    );
+};
 
-// Response interceptor for error handling
-client.interceptors.response.use(
-    (response) => response,
-    (error) => {
-        if (error.response) {
-            // The request was made and the server responded with a status code
-            // that falls out of the range of 2xx
-            console.error('API Error:', error.response.data);
-        } else if (error.request) {
-            // The request was made but no response was received
-            console.error('Network Error:', error.message);
-        } else {
-            console.error('Request Error:', error.message);
-        }
-        return Promise.reject(error);
-    }
-);
+// Initialize interceptors for all clients
+setupInterceptors(polarisClient);
+setupInterceptors(castorClient);
+setupInterceptors(carinaClient);
 
-export default client;
+// Default export for backward compatibility (defaults to Polaris)
+export default polarisClient;

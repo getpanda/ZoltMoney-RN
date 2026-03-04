@@ -1,4 +1,4 @@
-import client from './client';
+import { polarisClient, castorClient, carinaClient } from './client';
 import { encodeStringToReversedHex } from '../utils/stringUtils';
 
 /**
@@ -12,7 +12,7 @@ export const loginInit = async (fullMobileNumber: string) => {
         mobile_number: encodeStringToReversedHex(cleanNumber),
         turnstile_token: null,
     };
-    const response = await client.post('user/send-otp', payload);
+    const response = await polarisClient.post('user/send-otp', payload);
     return response.data;
 };
 
@@ -36,7 +36,7 @@ export const loginVerify = async (fullMobileNumber: string, otp: string, country
         },
         turnstile_token: null,
     };
-    const response = await client.post('user/verify-otp', payload);
+    const response = await polarisClient.post('user/verify-otp', payload);
     return response.data;
 };
 
@@ -57,7 +57,8 @@ export const markAuthenticated = async () => {
  */
 export const loginInitBiometric = async () => {
     // Equivalent to /api/dfns/auth/login/init
-    const response = await client.post('dfns/auth/login/init', {});
+    // Route to CASTOR
+    const response = await castorClient.post('dfns/auth/login/init', {});
     return response.data;
 };
 
@@ -65,7 +66,8 @@ export const loginInitBiometric = async () => {
  * DFNS/Passkey: Verifies biometric login (signature)
  */
 export const loginVerifyBiometric = async (payload: any) => {
-    const response = await client.post('dfns/auth/login', payload);
+    // Route to CASTOR
+    const response = await castorClient.post('dfns/auth/login', payload);
     return response.data;
 };
 
@@ -74,7 +76,8 @@ export const loginVerifyBiometric = async (payload: any) => {
  * Matches panda-web /api/wallet/balance?country=XX
  */
 export const getWalletBalance = async (countryCode: string = 'IN') => {
-    const response = await client.get(`wallet/balance?country=${countryCode.toUpperCase()}`);
+    // Route to CASTOR (Wallet balance is a DFNS resource on the API)
+    const response = await castorClient.get(`dfns/wallet/balance?country=${countryCode.toUpperCase()}`);
     return response.data;
 };
 
@@ -82,7 +85,8 @@ export const getWalletBalance = async (countryCode: string = 'IN') => {
  * Gets the current user's profile/details.
  */
 export const getUserProfile = async () => {
-    const response = await client.get('user/me');
+    // Route to POLARIS
+    const response = await polarisClient.get('user/me');
     return response.data;
 };
 
@@ -90,7 +94,8 @@ export const getUserProfile = async () => {
  * Gets exchange rates for the corridor (source → destination).
  */
 export const getExchangeRate = async (sourceCurrency: string, targetCurrency: string, amount: number) => {
-    const response = await client.get(
+    // Route to CARINA
+    const response = await carinaClient.get(
         `transfer/rate?source=${sourceCurrency}&target=${targetCurrency}&amount=${amount}`
     );
     return response.data;
@@ -104,7 +109,7 @@ export const emailOtpInit = async (email: string) => {
     const payload = {
         email: encodeStringToReversedHex(email),
     };
-    const response = await client.post('user/send-email-otp', payload);
+    const response = await polarisClient.post('user/send-email-otp', payload);
     return response.data;
 };
 
@@ -118,6 +123,6 @@ export const emailOtpVerify = async (email: string, passcode: string) => {
         email: encodeStringToReversedHex(email),
         passcode: encodeStringToReversedHex(passcode),
     };
-    const response = await client.post('user/verify-email-otp', payload);
+    const response = await polarisClient.post('user/verify-email-otp', payload);
     return response.data;
 };

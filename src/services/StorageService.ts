@@ -34,5 +34,20 @@ export const StorageService = {
         }
     },
 
+    async logout() {
+        const keys = [
+            KEYS.AUTH_TOKEN,
+            KEYS.REFRESH_TOKEN,
+            KEYS.BIOMETRIC_ENABLED,
+            KEYS.USER_ID,
+            KEYS.PHONE_NUMBER,
+            '@wallet_type',
+            '@credential_id',
+        ];
+        for (const key of keys) {
+            try { await AsyncStorage.removeItem(key); } catch (_) { }
+        }
+    },
+
     KEYS,
 };

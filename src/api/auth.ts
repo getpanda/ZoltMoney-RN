@@ -65,8 +65,33 @@ export const loginInitBiometric = async () => {
  * DFNS/Passkey: Verifies biometric login (signature)
  */
 export const loginVerifyBiometric = async (payload: any) => {
-    // Equivalent to /api/dfns/auth/login
-    // Payload contains credential_info, user_id, identifier
     const response = await client.post('dfns/auth/login', payload);
+    return response.data;
+};
+
+/**
+ * Gets the user's wallet balance.
+ * Matches panda-web /api/wallet/balance?country=XX
+ */
+export const getWalletBalance = async (countryCode: string = 'IN') => {
+    const response = await client.get(`wallet/balance?country=${countryCode.toUpperCase()}`);
+    return response.data;
+};
+
+/**
+ * Gets the current user's profile/details.
+ */
+export const getUserProfile = async () => {
+    const response = await client.get('user/me');
+    return response.data;
+};
+
+/**
+ * Gets exchange rates for the corridor (source → destination).
+ */
+export const getExchangeRate = async (sourceCurrency: string, targetCurrency: string, amount: number) => {
+    const response = await client.get(
+        `transfer/rate?source=${sourceCurrency}&target=${targetCurrency}&amount=${amount}`
+    );
     return response.data;
 };

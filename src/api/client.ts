@@ -1,4 +1,5 @@
 import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // Base URL from the PandaMoney 'refactor' configuration
 const API_BASE_URL = 'https://polaris-dev.getpanda.money/api/v1';
@@ -14,27 +15,18 @@ const client = axios.create({
     },
 });
 
-// Request interceptor for authentication
-// We will later integrate SecureStore to persist tokens
+// Request interceptor — attach stored auth token automatically
 client.interceptors.request.use(
     async (config) => {
-        // Log the outgoing request for debugging
-        console.log('--- API Request ---');
-        console.log('Method:', config.method?.toUpperCase());
-        console.log('URL:', config.url);
-        console.log('Headers:', config.headers);
-        console.log('Body:', config.data);
-        console.log('-------------------');
-
-        // const token = await SecureStore.getItemAsync('userToken');
-        // if (token) {
-        //   config.headers.Authorization = `Bearer ${token}`;
-        // }
+        try {
+            const token = await AsyncStorage.getItem('@auth_token');
+            if (token) {
+                config.headers.Authorization = `Bearer ${token}`;
+            }
+        } catch (_) { }
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
 // Response interceptor for error handling

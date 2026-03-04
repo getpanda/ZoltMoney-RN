@@ -1,4 +1,4 @@
-import React, { useState, useRef, useMemo, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useMemo } from 'react';
 import {
     View,
     Text,
@@ -19,47 +19,12 @@ import {
 import PhoneInput from 'react-native-phone-number-input';
 import { AsYouTypeFormatter, PhoneNumberUtil } from 'google-libphonenumber';
 import { COLORS } from '../theme/colors';
-import { loginInit, loginVerify } from '../api/auth';
-import { StorageService } from '../services/StorageService';
+import { loginInit } from '../api/auth';
+
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 const LoginScreen = ({ navigation }: any) => {
-    const [value, setValue] = useState('');
-    const [formattedValue, setFormattedValue] = useState('');
-    const [otp, setOtp] = useState('');
-    const [step, setStep] = useState<'phone' | 'otp'>('phone');
-    const [loading, setLoading] = useState(false);
-    const [isPhoneValid, setIsPhoneValid] = useState(false);
-
-    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
-
-    // OTP state
-    const otpInputRef = useRef<TextInput>(null);
-    const [otpDigits, setOtpDigits] = useState(['', '', '', '', '', '']);
-    const [resendTimer, setResendTimer] = useState(60);
-    const [canResend, setCanResend] = useState(false);
-    const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-    const startResendTimer = useCallback(() => {
-        setResendTimer(60);
-        setCanResend(false);
-        if (timerRef.current) clearInterval(timerRef.current);
-        timerRef.current = setInterval(() => {
-            setResendTimer(prev => {
-                if (prev <= 1) {
-                    if (timerRef.current) clearInterval(timerRef.current);
-                    setCanResend(true);
-                    return 0;
-                }
-                return prev - 1;
-            });
-        }, 1000);
-    }, []);
-
-    useEffect(() => {
-        return () => { if (timerRef.current) clearInterval(timerRef.current); };
-    }, []);
 
     const phoneInput = useRef<PhoneInput>(null);
     const [isCountryPickerVisible, setIsCountryPickerVisible] = useState(false);
@@ -124,10 +89,17 @@ const LoginScreen = ({ navigation }: any) => {
         );
     }, [countrySearch]);
 
+    const [value, setValue] = useState('');
+    const [formattedValue, setFormattedValue] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [isPhoneValid, setIsPhoneValid] = useState(false);
+    const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+
+
+
     const getApiErrorMessage = (error: any, fallback: string): string => {
         const data = error?.response?.data;
         if (!data) return fallback;
-        // Return exact message from API response
         return data.message || data.error || fallback;
     };
 
@@ -135,67 +107,12 @@ const LoginScreen = ({ navigation }: any) => {
         setLoading(true);
         try {
             await loginInit(formattedValue);
-            setStep('otp');
-            setOtpDigits(['', '', '', '', '', '']);
-            setOtp('');
-            startResendTimer();
-            setTimeout(() => otpInputRef.current?.focus(), 300);
+            navigation.navigate('OtpVerification', {
+                formattedValue,
+                selectedCountry,
+            });
         } catch (error: any) {
             Alert.alert('Error', getApiErrorMessage(error, 'Failed to send OTP. Please try again.'));
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const handleVerifyOtp = async () => {
-        if (otp.length < 6) {
-            Alert.alert('Invalid OTP', 'Please enter a 6-digit verification code');
-            return;
-        }
-
-        setLoading(true);
-        try {
-            // Extract country data from phone input ref
-            const countryCode = phoneInput.current?.getCountryCode() || 'IN';
-            const callingCode = phoneInput.current?.getCallingCode() || '91';
-
-            // For now, mapping common countries or using shortcode as fallback for name
-            const countryName = countryCode === 'IN' ? 'India' : countryCode;
-
-            const countryData = {
-                code: `+${callingCode}`,
-                shortcode: countryCode,
-                name: countryName
-            };
-
-            const data = await loginVerify(formattedValue, otp, countryData);
-
-            // Persist session data and wallet type from panda-web response
-            if (data.token || data.access_token) {
-                const token = data.token || data.access_token;
-                await StorageService.setItem(StorageService.KEYS.AUTH_TOKEN, token);
-            }
-            await StorageService.setItem(StorageService.KEYS.PHONE_NUMBER, formattedValue);
-
-            // Handle onboarding/wallet info
-            const onboarding = data.onboarding;
-            const walletType = onboarding?.wallet_type || 'custodial';
-            await StorageService.setItem('@wallet_type', walletType);
-
-            console.log('Login Success:', data);
-
-            // Navigate based on onboarding state or re-auth needs
-            const isReturningUser = onboarding?.flow === 'login' || data.signupStep === 'complete';
-
-            if (isReturningUser) {
-                // If it's a returning user, panda-web flow requires biometric re-auth
-                navigation.replace('BiometricLogin');
-            } else {
-                // New user flow: navigate to Home (or onboarding steps if they existed)
-                navigation.replace('Home');
-            }
-        } catch (error: any) {
-            Alert.alert('Error', getApiErrorMessage(error, 'Invalid OTP. Please try again.'));
         } finally {
             setLoading(false);
         }
@@ -212,7 +129,7 @@ const LoginScreen = ({ navigation }: any) => {
                     <View style={styles.header}>
                         <View style={styles.topRow}>
                             <TouchableOpacity
-                                onPress={() => step === 'otp' ? setStep('phone') : navigation.goBack()}
+                                onPress={() => navigation.goBack()}
                                 style={styles.backButton}
                             >
                                 <Text style={styles.backButtonText}>←</Text>
@@ -222,238 +139,166 @@ const LoginScreen = ({ navigation }: any) => {
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.title}>
-                            {step === 'phone' ? "What's your mobile number?" : "Verification"}
-                        </Text>
-                        <Text style={styles.subtitle}>
-                            {step === 'phone'
-                                ? "We will send you a verification code"
-                                : `Enter the 6-digit code sent to ${formattedValue}`}
-                        </Text>
+                        <Text style={styles.title}>What's your mobile number?</Text>
+                        <Text style={styles.subtitle}>We will send you a verification code</Text>
                     </View>
 
                     <View style={styles.form}>
-                        {step === 'phone' ? (
-                            <View style={styles.phoneInputWrapper}>
-                                <View style={styles.customInputRow}>
-                                    <TouchableOpacity
-                                        style={styles.codeContainer}
-                                        onPress={() => {
-                                            setIsCountryPickerVisible(true);
-                                        }}
-                                    >
-                                        <Text style={styles.phoneCodeText}>
-                                            {`+${selectedCountry.callingCode}`}
-                                        </Text>
-                                        <Text style={styles.dropdownArrow}>⌵</Text>
-                                    </TouchableOpacity>
-
-                                    <TextInput
-                                        style={styles.customNumberInput}
-                                        placeholder="201-555-0123"
-                                        placeholderTextColor="rgba(212, 186, 127, 0.25)"
-                                        keyboardType="phone-pad"
-                                        value={value}
-                                        selectionColor={COLORS.primary}
-                                        onChangeText={(text) => {
-                                            // 1. Remove non-numeric characters to get raw input
-                                            const cleaned = text.replace(/[^0-9]/g, '');
-
-                                            // 2. Format as you type
-                                            let formatted = cleaned;
-                                            if (cleaned.length > 0) {
-                                                try {
-                                                    const formatter = new AsYouTypeFormatter(selectedCountry.code);
-                                                    formatter.clear();
-                                                    cleaned.split('').forEach(char => {
-                                                        formatted = formatter.inputDigit(char);
-                                                    });
-                                                } catch (e) {
-                                                    console.warn('Formatting error:', e);
-                                                }
-                                            }
-
-                                            setValue(formatted);
-
-                                            // 3. Strict Validation using PhoneNumberUtil
-                                            let isValid = false;
-                                            if (cleaned.length >= 7) {
-                                                try {
-                                                    const parsedNumber = phoneUtil.parseAndKeepRawInput(cleaned, selectedCountry.code);
-                                                    isValid = phoneUtil.isValidNumberForRegion(parsedNumber, selectedCountry.code);
-                                                } catch (e) {
-                                                    isValid = false;
-                                                }
-                                            }
-                                            setIsPhoneValid(isValid);
-
-                                            // 4. Sync formatted value for API
-                                            setFormattedValue(`+${selectedCountry.callingCode}${cleaned}`);
-                                        }}
-                                        autoFocus
-                                    />
-                                </View>
-
-                                {/* Hidden library component for modal and logic */}
-                                <View style={styles.hiddenPhoneInputContainer}>
-                                    <PhoneInput
-                                        ref={phoneInput}
-                                        defaultValue={value}
-                                        defaultCode="IN"
-                                        layout="first"
-                                        onChangeText={(text) => setValue(text)}
-                                        onChangeFormattedText={(text) => setFormattedValue(text)}
-                                        withDarkTheme
-                                    />
-                                </View>
-
-                                {/* Custom Country Picker Modal */}
-                                <Modal
-                                    visible={isCountryPickerVisible}
-                                    animationType="slide"
-                                    onRequestClose={() => setIsCountryPickerVisible(false)}
+                        <View style={styles.phoneInputWrapper}>
+                            <View style={styles.customInputRow}>
+                                <TouchableOpacity
+                                    style={styles.codeContainer}
+                                    onPress={() => {
+                                        setIsCountryPickerVisible(true);
+                                    }}
                                 >
-                                    <SafeAreaView style={styles.countryModalContainer}>
-                                        <KeyboardAvoidingView
-                                            style={{ flex: 1 }}
-                                            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                                        >
-                                            {/* Search bar */}
-                                            <View style={styles.countrySearchContainer}>
-                                                <View style={styles.searchBox}>
-                                                    <Text style={styles.searchIconText}>⌕</Text>
-                                                    <TextInput
-                                                        style={styles.searchInput}
-                                                        placeholder="Search"
-                                                        placeholderTextColor="rgba(255,255,255,0.35)"
-                                                        value={countrySearch}
-                                                        onChangeText={setCountrySearch}
-                                                        selectionColor={COLORS.primary}
-                                                        autoCorrect={false}
-                                                        autoFocus
-                                                    />
-                                                </View>
-                                            </View>
+                                    <Text style={styles.phoneCodeText}>
+                                        {`+${selectedCountry.callingCode}`}
+                                    </Text>
+                                    <Text style={styles.dropdownArrow}>⌵</Text>
+                                </TouchableOpacity>
 
-                                            {/* Country list */}
-                                            <FlatList
-                                                data={filteredCountries}
-                                                keyExtractor={(item) => item.code}
-                                                keyboardShouldPersistTaps="handled"
-                                                renderItem={({ item }) => {
-                                                    const isSelected = item.code === selectedCountry.code;
-                                                    return (
-                                                        <TouchableOpacity
-                                                            style={[styles.countryItem, isSelected && styles.countryItemSelected]}
-                                                            onPress={() => {
-                                                                setSelectedCountry(item);
-                                                                setFormattedValue(`+${item.callingCode}${value}`);
-                                                                setCountrySearch('');
-                                                                setIsCountryPickerVisible(false);
-                                                            }}
-                                                        >
-                                                            <Text style={styles.countryFlag}>{item.flag}</Text>
-                                                            <Text style={styles.countryCallingCode}>+{item.callingCode}</Text>
-                                                            <Text style={styles.countryName}>{item.name}</Text>
-                                                        </TouchableOpacity>
-                                                    );
-                                                }}
-                                            />
-                                        </KeyboardAvoidingView>
-                                    </SafeAreaView>
-                                </Modal>
-                            </View>
-                        ) : (
-                            <View style={styles.otpInputWrapper}>
-                                {/* Hidden TextInput to capture keystrokes */}
                                 <TextInput
-                                    ref={otpInputRef}
-                                    style={styles.hiddenOtpInput}
-                                    keyboardType="number-pad"
-                                    maxLength={6}
-                                    value={otp}
-                                    caretHidden
+                                    style={styles.customNumberInput}
+                                    placeholder="201-555-0123"
+                                    placeholderTextColor="rgba(212, 186, 127, 0.25)"
+                                    keyboardType="phone-pad"
+                                    value={value}
+                                    selectionColor={COLORS.primary}
                                     onChangeText={(text) => {
-                                        const cleaned = text.replace(/[^0-9]/g, '').slice(0, 6);
-                                        setOtp(cleaned);
-                                        const digits = cleaned.split('');
-                                        setOtpDigits([
-                                            digits[0] || '',
-                                            digits[1] || '',
-                                            digits[2] || '',
-                                            digits[3] || '',
-                                            digits[4] || '',
-                                            digits[5] || '',
-                                        ]);
+                                        // 1. Remove non-numeric characters to get raw input
+                                        const cleaned = text.replace(/[^0-9]/g, '');
+
+                                        // 2. Format as you type
+                                        let formatted = cleaned;
+                                        if (cleaned.length > 0) {
+                                            try {
+                                                const formatter = new AsYouTypeFormatter(selectedCountry.code);
+                                                formatter.clear();
+                                                cleaned.split('').forEach(char => {
+                                                    formatted = formatter.inputDigit(char);
+                                                });
+                                            } catch (e) {
+                                                console.warn('Formatting error:', e);
+                                            }
+                                        }
+
+                                        setValue(formatted);
+
+                                        // 3. Strict Validation using PhoneNumberUtil
+                                        let isValid = false;
+                                        if (cleaned.length >= 7) {
+                                            try {
+                                                const parsedNumber = phoneUtil.parseAndKeepRawInput(cleaned, selectedCountry.code);
+                                                isValid = phoneUtil.isValidNumberForRegion(parsedNumber, selectedCountry.code);
+                                            } catch (e) {
+                                                isValid = false;
+                                            }
+                                        }
+                                        setIsPhoneValid(isValid);
+
+                                        // 4. Sync formatted value for API
+                                        setFormattedValue(`+${selectedCountry.callingCode}${cleaned}`);
                                     }}
                                     autoFocus
                                 />
-
-                                {/* 6 visual digit boxes */}
-                                <TouchableWithoutFeedback onPress={() => otpInputRef.current?.focus()}>
-                                    <View style={styles.otpBoxesRow}>
-                                        {otpDigits.map((digit, i) => (
-                                            <View
-                                                key={i}
-                                                style={[
-                                                    styles.otpBox,
-                                                    otp.length === i && styles.otpBoxFocused,
-                                                ]}
-                                            >
-                                                <Text style={styles.otpBoxText}>{digit}</Text>
-                                            </View>
-                                        ))}
-                                    </View>
-                                </TouchableWithoutFeedback>
-
-                                {/* Resend row */}
-                                <View style={styles.resendRow}>
-                                    {canResend ? (
-                                        <TouchableOpacity onPress={() => { handleSendOtp(); }}>
-                                            <Text style={styles.resendText}>
-                                                Didn't receive a code?{' '}
-                                                <Text style={styles.resendLink}>Resend</Text>
-                                            </Text>
-                                        </TouchableOpacity>
-                                    ) : (
-                                        <Text style={styles.resendText}>
-                                            Didn't receive a code? Resend in{' '}
-                                            <Text style={styles.resendCountdown}>
-                                                {String(Math.floor(resendTimer / 60)).padStart(2, '0')}:{String(resendTimer % 60).padStart(2, '0')}
-                                            </Text>
-                                        </Text>
-                                    )}
-                                </View>
                             </View>
-                        )}
+
+                            {/* Hidden library component for modal and logic */}
+                            <View style={styles.hiddenPhoneInputContainer}>
+                                <PhoneInput
+                                    ref={phoneInput}
+                                    defaultValue={value}
+                                    defaultCode="IN"
+                                    layout="first"
+                                    onChangeText={(text) => setValue(text)}
+                                    onChangeFormattedText={(text) => setFormattedValue(text)}
+                                    withDarkTheme
+                                />
+                            </View>
+
+                            {/* Custom Country Picker Modal */}
+                            <Modal
+                                visible={isCountryPickerVisible}
+                                animationType="slide"
+                                onRequestClose={() => setIsCountryPickerVisible(false)}
+                            >
+                                <SafeAreaView style={styles.countryModalContainer}>
+                                    <KeyboardAvoidingView
+                                        style={{ flex: 1 }}
+                                        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                                    >
+                                        {/* Search bar */}
+                                        <View style={styles.countrySearchContainer}>
+                                            <View style={styles.searchBox}>
+                                                <Text style={styles.searchIconText}>⌕</Text>
+                                                <TextInput
+                                                    style={styles.searchInput}
+                                                    placeholder="Search"
+                                                    placeholderTextColor="rgba(255,255,255,0.35)"
+                                                    value={countrySearch}
+                                                    onChangeText={setCountrySearch}
+                                                    selectionColor={COLORS.primary}
+                                                    autoCorrect={false}
+                                                    autoFocus
+                                                />
+                                            </View>
+                                        </View>
+
+                                        {/* Country list */}
+                                        <FlatList
+                                            data={filteredCountries}
+                                            keyExtractor={(item) => item.code}
+                                            keyboardShouldPersistTaps="handled"
+                                            renderItem={({ item }) => {
+                                                const isSelected = item.code === selectedCountry.code;
+                                                return (
+                                                    <TouchableOpacity
+                                                        style={[styles.countryItem, isSelected && styles.countryItemSelected]}
+                                                        onPress={() => {
+                                                            setSelectedCountry(item);
+                                                            setFormattedValue(`+${item.callingCode}${value}`);
+                                                            setCountrySearch('');
+                                                            setIsCountryPickerVisible(false);
+                                                        }}
+                                                    >
+                                                        <Text style={styles.countryFlag}>{item.flag}</Text>
+                                                        <Text style={styles.countryCallingCode}>+{item.callingCode}</Text>
+                                                        <Text style={styles.countryName}>{item.name}</Text>
+                                                    </TouchableOpacity>
+                                                );
+                                            }}
+                                        />
+                                    </KeyboardAvoidingView>
+                                </SafeAreaView>
+                            </Modal>
+                        </View>
 
                         <View style={styles.flexFiller} />
 
                         <View style={styles.bottomSection}>
-                            {step === 'phone' && (
-                                <TouchableOpacity
-                                    style={styles.termsRow}
-                                    onPress={() => setIsTermsAccepted(!isTermsAccepted)}
-                                >
-                                    <View style={[styles.checkbox, isTermsAccepted && styles.checkboxChecked]}>
-                                        {isTermsAccepted && <Text style={styles.checkmark}>✓</Text>}
-                                    </View>
-                                    <Text style={styles.termsText}>
-                                        By Continuing, you agree to our{' '}
-                                        <Text style={styles.linkText}>Terms of Use</Text> and{' '}
-                                        <Text style={styles.linkText}>Privacy Policy</Text>.
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
+                            <TouchableOpacity
+                                style={styles.termsRow}
+                                onPress={() => setIsTermsAccepted(!isTermsAccepted)}
+                            >
+                                <View style={[styles.checkbox, isTermsAccepted && styles.checkboxChecked]}>
+                                    {isTermsAccepted && <Text style={styles.checkmark}>✓</Text>}
+                                </View>
+                                <Text style={styles.termsText}>
+                                    By Continuing, you agree to our{' '}
+                                    <Text style={styles.linkText}>Terms of Use</Text> and{' '}
+                                    <Text style={styles.linkText}>Privacy Policy</Text>.
+                                </Text>
+                            </TouchableOpacity>
 
                             <TouchableOpacity
                                 style={[
                                     styles.primaryButton,
-                                    (loading || (step === 'phone' && (!isPhoneValid || !isTermsAccepted)) || (step === 'otp' && otp.length < 6)) && styles.buttonDisabled,
-                                    (!loading && ((step === 'phone' && isPhoneValid && isTermsAccepted) || (step === 'otp' && otp.length === 6))) && styles.buttonEnabled
+                                    (loading || !isPhoneValid || !isTermsAccepted) && styles.buttonDisabled,
+                                    (!loading && isPhoneValid && isTermsAccepted) && styles.buttonEnabled,
                                 ]}
-                                onPress={step === 'phone' ? handleSendOtp : handleVerifyOtp}
-                                disabled={loading || (step === 'phone' && (!isPhoneValid || !isTermsAccepted)) || (step === 'otp' && otp.length < 6)}
+                                onPress={handleSendOtp}
+                                disabled={loading || !isPhoneValid || !isTermsAccepted}
                             >
                                 <View style={styles.buttonInner}>
                                     {loading ? (
@@ -461,37 +306,35 @@ const LoginScreen = ({ navigation }: any) => {
                                     ) : (
                                         <Text style={[
                                             styles.buttonText,
-                                            (!loading && ((step === 'phone' && isPhoneValid && isTermsAccepted) || (step === 'otp' && otp.length === 6))) && styles.buttonTextEnabled
+                                            (!loading && isPhoneValid && isTermsAccepted) && styles.buttonTextEnabled,
                                         ]}>
-                                            {step === 'phone' ? "Continue" : "Verify & Sign In"}
+                                            Continue
                                         </Text>
                                     )}
                                 </View>
                             </TouchableOpacity>
 
-                            {step === 'phone' && (
-                                <View style={styles.socialWrapper}>
-                                    <View style={styles.dividerContainer}>
-                                        <View style={styles.divider} />
-                                        <Text style={styles.dividerText}>OR LOGIN WITH</Text>
-                                        <View style={styles.divider} />
-                                    </View>
-
-                                    <View style={styles.socialContainer}>
-                                        <TouchableOpacity style={styles.socialButton}>
-                                            <Text style={styles.socialIcon}>G</Text>
-                                        </TouchableOpacity>
-                                        <TouchableOpacity style={styles.socialButton}>
-                                            <Text style={styles.socialIcon}></Text>
-                                        </TouchableOpacity>
-                                    </View>
+                            <View style={styles.socialWrapper}>
+                                <View style={styles.dividerContainer}>
+                                    <View style={styles.divider} />
+                                    <Text style={styles.dividerText}>OR LOGIN WITH</Text>
+                                    <View style={styles.divider} />
                                 </View>
-                            )}
+
+                                <View style={styles.socialContainer}>
+                                    <TouchableOpacity style={styles.socialButton}>
+                                        <Text style={styles.socialIcon}>G</Text>
+                                    </TouchableOpacity>
+                                    <TouchableOpacity style={styles.socialButton}>
+                                        <Text style={styles.socialIcon}></Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
                         </View>
                     </View>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
-        </SafeAreaView>
+        </SafeAreaView >
     );
 };
 

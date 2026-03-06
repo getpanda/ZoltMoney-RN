@@ -173,7 +173,9 @@ const OtpScreen = ({ navigation, route }: any) => {
                 </Typography>
               </TouchableOpacity>
               <TouchableOpacity style={styles.supportIcon}>
-                <Typography style={styles.supportEmoji}>🎧</Typography>
+                <Typography style={styles.supportEmoji}>
+                  {t('common.support_emoji')}
+                </Typography>
               </TouchableOpacity>
             </View>
 
@@ -348,8 +350,8 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 10,
     borderWidth: 1.5,
-    borderColor: 'rgba(212, 186, 127, 0.30)',
-    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    borderColor: Theme.COLORS.primary30,
+    backgroundColor: Theme.COLORS.white05,
     justifyContent: 'center',
     alignItems: 'center',
   },

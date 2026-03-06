@@ -6,7 +6,19 @@
         "continue": "Continue",
         "back": "Back",
         "logout": "Logout",
-        "verify": "Verify"
+        "verify": "Verify",
+        "search": "Search",
+        "loading_dots": "...",
+        "back_arrow": "←",
+        "support_emoji": "🎧",
+        "dropdown_arrow": "⌵",
+        "search_icon": "⌕",
+        "error_emoji": "⚠️",
+        "plus_icon": "＋",
+        "user_plus_icon": "👤⊕",
+        "bell_icon": "�",
+        "chevron_down": "▾",
+        "explore": "Explore"
     },
     "auth": {
         "login": {
@@ -14,8 +26,14 @@
             "subtitle": "We will send you a verification code",
             "phone_placeholder": "Phone Number",
             "send_otp": "Send OTP",
-            "apple_login": "Sign in with Apple",
-            "google_login": "Sign in with Google"
+            "google_login": "Sign in with Google",
+            "phone_placeholder_example": "201-555-0123",
+            "terms_prefix": "By continuing, you agree to our ",
+            "terms_link": "Terms of Service",
+            "terms_and": " and ",
+            "terms_privacy_link": "Privacy Policy",
+            "social_divider": "or continue with",
+            "terms_dot": "."
         },
         "otp": {
             "title": "Enter verification code",
@@ -38,16 +56,18 @@
             "login_subtitle": "Use {{type}} or screen lock to authenticate and access your account.",
             "login_button": "Verify with {{type}}",
             "use_phone": "Use Phone Number instead",
-            "auth_failed": "Authentication Failed",
             "auth_failed_msg": "Please try again.",
             "sign_error": "Failed to sign biometric challenge.",
-            "login_failed_title": "Login Failed"
+            "login_failed_title": "Login Failed",
+            "face_id_emoji": "👤",
+            "touch_id_emoji": "✋"
         },
         "email_verify": {
             "title": "Verify Your Email Address",
             "subtitle": "Enter your email address below and we'll send you a 6-digit verification code to confirm it",
             "placeholder": "Email",
             "send_button": "Send OTP",
+            "icon": "◎",
             "logout_confirm": {
                 "title": "Logout",
                 "message": "Are you sure you want to logout? This will reset your onboarding progress.",
@@ -76,22 +96,30 @@
             "manage_beneficiary": "Manage\nBeneficiary",
             "send_to_contacts": "Send to\nContacts",
             "under_maintenance": "Under\nMaintenance",
-            "coming_soon": "Coming\nSoon"
+            "coming_soon": "Coming\nSoon",
+            "id_success_icon": "🪪"
         },
         "promo": {
             "title": "Unlock Your €10 Signup Bonus!!",
             "subtitle": "Send total of {{amount}}+ and we'll drop €10\nOffer valid once per user.",
-            "button": "Send Now"
+            "button": "Send Now",
+            "mascot_text": "pa",
+            "mascot_stars": "✦ ✦"
         },
         "rates": {
             "title": "Our Rates",
             "sending_label": "You are sending",
             "recipient_label": "Recipient gets",
-            "success_msg": "Woo hoo! you get {{amount}}"
+            "success_msg": "Woo hoo! you get {{amount}}",
+            "flag": "🇸🇪",
+            "currency_suffix": " EUR"
         },
+        "gift_emoji": "🎁",
         "tabs": {
             "home": "Home",
-            "history": "History"
+            "history": "History",
+            "home_icon": "⌂",
+            "history_icon": "⏱"
         },
         "logout_confirm": {
             "title": "Logout",
@@ -120,5 +148,60 @@
         "title": "Product Details",
         "content_line1": "This is a native screen with a real iOS navigation bar and back button.",
         "content_line2": "Try swiping from the left edge to go back!"
+    },
+    "error": {
+        "boundary": {
+            "title": "Oops! Something went wrong.",
+            "message": "The application encountered an unexpected error. We've been notified and are working on it.",
+            "button": "Restart App"
+        }
+    },
+    "countries": {
+        "AF": "Afghanistan",
+        "AL": "Albania",
+        "DZ": "Algeria",
+        "AR": "Argentina",
+        "AU": "Australia",
+        "AT": "Austria",
+        "BE": "Belgium",
+        "BR": "Brazil",
+        "CA": "Canada",
+        "CN": "China",
+        "DK": "Denmark",
+        "EE": "Estonia",
+        "FI": "Finland",
+        "FR": "France",
+        "DE": "Germany",
+        "HU": "Hungary",
+        "IN": "India",
+        "ID": "Indonesia",
+        "IE": "Ireland",
+        "IT": "Italy",
+        "JP": "Japan",
+        "LV": "Latvia",
+        "LT": "Lithuania",
+        "MX": "Mexico",
+        "NL": "Netherlands",
+        "NZ": "New Zealand",
+        "NG": "Nigeria",
+        "NO": "Norway",
+        "PK": "Pakistan",
+        "PL": "Poland",
+        "PT": "Portugal",
+        "RO": "Romania",
+        "RU": "Russia",
+        "SA": "Saudi Arabia",
+        "SG": "Singapore",
+        "ZA": "South Africa",
+        "KR": "South Korea",
+        "ES": "Spain",
+        "SE": "Sweden",
+        "CH": "Switzerland",
+        "TR": "Turkey",
+        "UA": "Ukraine",
+        "AE": "United Arab Emirates",
+        "GB": "United Kingdom",
+        "US": "United States",
+        "VN": "Vietnam"
     }
 }

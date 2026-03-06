@@ -98,14 +98,16 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
       <SafeAreaView style={styles.container}>
         <View style={styles.header}>
           <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-            <Typography variant="h3">←</Typography>
+            <Typography variant="h3">{t('common.back_arrow')}</Typography>
           </TouchableOpacity>
           <View style={styles.searchBox}>
-            <Typography style={styles.searchIconText}>⌕</Typography>
+            <Typography style={styles.searchIconText}>
+              {t('common.search_icon')}
+            </Typography>
             <TextInput
               style={styles.searchInput}
-              placeholder={t('common.search') || 'Search'}
-              placeholderTextColor="rgba(255,255,255,0.35)"
+              placeholder={t('common.search')}
+              placeholderTextColor={Theme.COLORS.white35}
               value={search}
               onChangeText={setSearch}
               selectionColor={Theme.COLORS.primary}
@@ -137,7 +139,9 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
                 <Typography style={styles.countryCallingCode}>
                   +{item.callingCode}
                 </Typography>
-                <Typography style={styles.countryName}>{item.name}</Typography>
+                <Typography style={styles.countryName}>
+                  {t(`countries.${item.code}`)}
+                </Typography>
               </TouchableOpacity>
             );
           }}
@@ -167,12 +171,12 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#000',
+    backgroundColor: Theme.COLORS.surface,
     borderRadius: 12,
     paddingHorizontal: 16,
     height: 52,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.1)',
+    borderColor: Theme.COLORS.white10,
   },
   searchIconText: {
     fontSize: 28,
@@ -194,7 +198,7 @@ const styles = StyleSheet.create({
     height: 60,
   },
   countryItemSelected: {
-    backgroundColor: 'rgba(255,255,255,0.07)',
+    backgroundColor: Theme.COLORS.white05,
     borderRadius: 12,
     marginHorizontal: 8,
   },

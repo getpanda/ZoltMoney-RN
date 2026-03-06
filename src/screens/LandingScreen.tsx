@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: 'rgba(2, 21, 17, 0.4)', // Subtle overlay to make text pop
+    backgroundColor: Theme.COLORS.background40, // Subtle overlay to make text pop
   },
   content: {
     flex: 1,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.2)',
+    borderColor: Theme.COLORS.white20,
   },
   secondaryButtonText: {
     color: Theme.COLORS.text,

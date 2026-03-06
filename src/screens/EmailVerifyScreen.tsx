@@ -1,16 +1,16 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-    View,
-    StyleSheet,
-    TouchableOpacity,
-    SafeAreaView,
-    KeyboardAvoidingView,
-    Platform,
-    TouchableWithoutFeedback,
-    Keyboard,
-    StatusBar,
-    TextInput,
-    Alert,
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  SafeAreaView,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+  Keyboard,
+  StatusBar,
+  TextInput,
+  Alert,
 } from 'react-native';
 import { useTranslation } from 'react-i18next';
 import Theme from '../theme/Theme';
@@ -19,198 +19,214 @@ import { emailOtpInit } from '../api/auth';
 import { StorageService } from '../services/StorageService';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
-    const data = error?.response?.data;
-    if (!data) return fallback;
-    return data.message || data.error || fallback;
+  const data = error?.response?.data;
+  if (!data) return fallback;
+  return data.message || data.error || fallback;
 };
 
 const EmailVerifyScreen = ({ navigation }: any) => {
-    const { t } = useTranslation();
-    const [email, setEmail] = useState('');
-    const [loading, setLoading] = useState(false);
-    const emailInputRef = useRef<TextInput>(null);
+  const { t } = useTranslation();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const emailInputRef = useRef<TextInput>(null);
 
-    useEffect(() => {
-        // Auto-focus email input on mount
-        const timer = setTimeout(() => {
-            emailInputRef.current?.focus();
-        }, 500);
-        return () => clearTimeout(timer);
-    }, []);
+  useEffect(() => {
+    // Auto-focus email input on mount
+    const timer = setTimeout(() => {
+      emailInputRef.current?.focus();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
 
-    const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+  const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
-    const handleLogout = async () => {
-        Alert.alert(
-            t('auth.email_verify.logout_confirm.title'),
-            t('auth.email_verify.logout_confirm.message'),
-            [
-                { text: t('auth.email_verify.logout_confirm.cancel'), style: 'cancel' },
-                {
-                    text: t('auth.email_verify.logout_confirm.confirm'),
-                    style: 'destructive',
-                    onPress: async () => {
-                        await StorageService.logout();
-                        navigation.reset({
-                            index: 0,
-                            routes: [{ name: 'Landing' }],
-                        });
-                    },
-                },
-            ]
-        );
-    };
-
-    const handleSendOtp = async () => {
-        setLoading(true);
-        try {
-            await emailOtpInit(email.trim());
-            navigation.navigate('EmailOtpVerify', { email: email.trim() });
-        } catch (error: any) {
-            Alert.alert(t('common.error'), getApiErrorMessage(error, t('auth.email_verify.send_error') || 'Failed to send OTP. Please try again.'));
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    return (
-        <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" />
-            <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-                <KeyboardAvoidingView
-                    behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-                    style={styles.inner}
-                >
-                    {/* Header icons */}
-                    <View style={styles.topRow}>
-                        <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                            <Typography style={styles.logoutText}>{t('auth.email_verify.logout_confirm.confirm')}</Typography>
-                        </TouchableOpacity>
-                        <View style={styles.topRightIcons}>
-                            <TouchableOpacity style={styles.iconButton}>
-                                <Typography style={styles.iconText}>◎</Typography>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-
-                    {/* Title */}
-                    <View style={styles.header}>
-                        <Typography style={styles.title}>{t('auth.email_verify.title')}</Typography>
-                        <Typography style={styles.subtitle}>
-                            {t('auth.email_verify.subtitle')}
-                        </Typography>
-                    </View>
-
-                    {/* Email Input */}
-                    <View style={styles.inputWrapper}>
-                        <TextInput
-                            ref={emailInputRef}
-                            style={styles.input}
-                            placeholder={t('auth.email_verify.placeholder')}
-                            placeholderTextColor="rgba(255,255,255,0.35)"
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoCorrect={false}
-                            value={email}
-                            onChangeText={setEmail}
-                            selectionColor={Theme.COLORS.primary}
-                        />
-                    </View>
-
-                    <View style={styles.flexFiller} />
-
-                    {/* Send OTP Button */}
-                    <View style={styles.bottomSection}>
-                        <Button
-                            title={t('auth.email_verify.send_button')}
-                            onPress={handleSendOtp}
-                            loading={loading}
-                            disabled={!isEmailValid || loading}
-                        />
-                    </View>
-                </KeyboardAvoidingView>
-            </TouchableWithoutFeedback>
-        </SafeAreaView>
+  const handleLogout = async () => {
+    Alert.alert(
+      t('auth.email_verify.logout_confirm.title'),
+      t('auth.email_verify.logout_confirm.message'),
+      [
+        { text: t('auth.email_verify.logout_confirm.cancel'), style: 'cancel' },
+        {
+          text: t('auth.email_verify.logout_confirm.confirm'),
+          style: 'destructive',
+          onPress: async () => {
+            await StorageService.logout();
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Landing' }],
+            });
+          },
+        },
+      ],
     );
+  };
+
+  const handleSendOtp = async () => {
+    setLoading(true);
+    try {
+      await emailOtpInit(email.trim());
+      navigation.navigate('EmailOtpVerify', { email: email.trim() });
+    } catch (error: any) {
+      Alert.alert(
+        t('common.error'),
+        getApiErrorMessage(
+          error,
+          t('auth.email_verify.send_error') ||
+            'Failed to send OTP. Please try again.',
+        ),
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" />
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.inner}
+        >
+          {/* Header icons */}
+          <View style={styles.topRow}>
+            <TouchableOpacity
+              onPress={handleLogout}
+              style={styles.logoutButton}
+            >
+              <Typography style={styles.logoutText}>
+                {t('auth.email_verify.logout_confirm.confirm')}
+              </Typography>
+            </TouchableOpacity>
+            <View style={styles.topRightIcons}>
+              <TouchableOpacity style={styles.iconButton}>
+                <Typography style={styles.iconText}>
+                  {t('auth.email_verify.icon')}
+                </Typography>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          {/* Title */}
+          <View style={styles.header}>
+            <Typography style={styles.title}>
+              {t('auth.email_verify.title')}
+            </Typography>
+            <Typography style={styles.subtitle}>
+              {t('auth.email_verify.subtitle')}
+            </Typography>
+          </View>
+
+          {/* Email Input */}
+          <View style={styles.inputWrapper}>
+            <TextInput
+              ref={emailInputRef}
+              style={styles.input}
+              placeholder={t('auth.email_verify.placeholder')}
+              placeholderTextColor={Theme.COLORS.white35}
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              value={email}
+              onChangeText={setEmail}
+              selectionColor={Theme.COLORS.primary}
+            />
+          </View>
+
+          <View style={styles.flexFiller} />
+
+          {/* Send OTP Button */}
+          <View style={styles.bottomSection}>
+            <Button
+              title={t('auth.email_verify.send_button')}
+              onPress={handleSendOtp}
+              loading={loading}
+              disabled={!isEmailValid || loading}
+            />
+          </View>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
+    </SafeAreaView>
+  );
 };
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: Theme.COLORS.background,
-    },
-    inner: {
-        flex: 1,
-        paddingHorizontal: 24,
-    },
-    topRow: {
-        marginTop: 12,
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        marginBottom: 32,
-    },
-    logoutButton: {
-        paddingVertical: 6,
-        paddingHorizontal: 12,
-    },
-    logoutText: {
-        color: Theme.COLORS.primary,
-        fontSize: 15,
-        fontWeight: '600',
-    },
-    topRightIcons: {
-        flexDirection: 'row',
-        gap: 12,
-    },
-    iconButton: {
-        width: 40,
-        height: 40,
-        borderRadius: 20,
-        borderWidth: 1.5,
-        borderColor: Theme.COLORS.primary,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    iconText: {
-        color: Theme.COLORS.primary,
-        fontSize: 18,
-        fontWeight: '400',
-    },
-    header: {
-        marginBottom: 32,
-    },
-    title: {
-        color: Theme.COLORS.text,
-        fontSize: 28,
-        fontWeight: '700',
-        lineHeight: 36,
-        marginBottom: 12,
-    },
-    subtitle: {
-        color: Theme.COLORS.textSecondary,
-        fontSize: 15,
-        lineHeight: 22,
-    },
-    inputWrapper: {
-        borderRadius: 12,
-        borderWidth: 1,
-        borderColor: 'rgba(255,255,255,0.15)',
-        backgroundColor: 'rgba(255,255,255,0.04)',
-        paddingHorizontal: 16,
-        paddingVertical: 4,
-    },
-    input: {
-        color: Theme.COLORS.text,
-        fontSize: 16,
-        height: 52,
-    },
-    flexFiller: {
-        flex: 1,
-    },
-    bottomSection: {
-        marginBottom: 24,
-    },
+  container: {
+    flex: 1,
+    backgroundColor: Theme.COLORS.background,
+  },
+  inner: {
+    flex: 1,
+    paddingHorizontal: 24,
+  },
+  topRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 32,
+  },
+  logoutButton: {
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+  },
+  logoutText: {
+    color: Theme.COLORS.primary,
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  topRightIcons: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    borderWidth: 1.5,
+    borderColor: Theme.COLORS.primary,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  iconText: {
+    color: Theme.COLORS.primary,
+    fontSize: 18,
+    fontWeight: '400',
+  },
+  header: {
+    marginBottom: 32,
+  },
+  title: {
+    color: Theme.COLORS.text,
+    fontSize: 28,
+    fontWeight: '700',
+    lineHeight: 36,
+    marginBottom: 12,
+  },
+  subtitle: {
+    color: Theme.COLORS.textSecondary,
+    fontSize: 15,
+    lineHeight: 22,
+  },
+  inputWrapper: {
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: Theme.COLORS.white20,
+    backgroundColor: Theme.COLORS.white05,
+    paddingHorizontal: 16,
+    paddingVertical: 4,
+  },
+  input: {
+    color: Theme.COLORS.text,
+    fontSize: 16,
+    height: 52,
+  },
+  flexFiller: {
+    flex: 1,
+  },
+  bottomSection: {
+    marginBottom: 24,
+  },
 });
 
 export default EmailVerifyScreen;

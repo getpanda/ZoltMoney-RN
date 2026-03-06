@@ -146,7 +146,9 @@ const BiometricLoginScreen = () => {
           <View style={styles.iconCircle}>
             {/* Placeholder for FaceID/TouchID icon */}
             <Typography style={styles.iconText}>
-              {biometryType === 'Face ID' ? '👤' : '✋'}
+              {biometryType === 'Face ID'
+                ? t('auth.biometric.face_id_emoji')
+                : t('auth.biometric.touch_id_emoji')}
             </Typography>
           </View>
         </View>
@@ -213,7 +215,7 @@ const styles = StyleSheet.create({
     borderStyle: 'dashed',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'rgba(212, 186, 127, 0.05)',
+    backgroundColor: Theme.COLORS.primary10,
   },
   iconText: {
     fontSize: 64,

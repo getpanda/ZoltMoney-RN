@@ -83,3 +83,7 @@ bundles/
 .env.*.local
 .env.development
 .env.production
+
+# Firebase/Google configuration files
+google-services.json
+GoogleService-Info*.plist

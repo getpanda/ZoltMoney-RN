@@ -75,11 +75,13 @@ const LoginScreen = ({ navigation }: any) => {
                 style={styles.backButton}
               >
                 <Typography variant="h3" style={styles.backButtonText}>
-                  ←
+                  {t('common.back_arrow')}
                 </Typography>
               </TouchableOpacity>
               <TouchableOpacity style={styles.supportIcon}>
-                <Typography style={styles.supportIconEmoji}>🎧</Typography>
+                <Typography style={styles.supportIconEmoji}>
+                  {t('common.support_emoji')}
+                </Typography>
               </TouchableOpacity>
             </View>
 
@@ -101,14 +103,16 @@ const LoginScreen = ({ navigation }: any) => {
                   <Typography style={styles.phoneCodeText}>
                     {`+${selectedCountry.callingCode}`}
                   </Typography>
-                  <Typography style={styles.dropdownArrow}>⌵</Typography>
+                  <Typography style={styles.dropdownArrow}>
+                    {t('common.dropdown_arrow')}
+                  </Typography>
                 </TouchableOpacity>
 
                 <TextInput
                   ref={phoneNumberRef}
                   style={styles.customNumberInput}
-                  placeholder="201-555-0123"
-                  placeholderTextColor="rgba(255, 255, 255, 0.2)"
+                  placeholder={t('auth.login.phone_placeholder_example')}
+                  placeholderTextColor={Theme.COLORS.white20}
                   keyboardType="phone-pad"
                   value={value}
                   selectionColor={Theme.COLORS.primary}
@@ -155,12 +159,12 @@ const LoginScreen = ({ navigation }: any) => {
                   {t('auth.login.terms_prefix')}
                   <Typography variant="caption" style={styles.linkText}>
                     {t('auth.login.terms_link')}
-                  </Typography>{' '}
-                  and{' '}
-                  <Typography variant="caption" style={styles.linkText}>
-                    {t('auth.login.privacy_link')}
                   </Typography>
-                  .
+                  {t('auth.login.terms_and')}
+                  <Typography variant="caption" style={styles.linkText}>
+                    {t('auth.login.terms_privacy_link')}
+                  </Typography>
+                  {t('auth.login.terms_dot')}
                 </Typography>
               </TouchableOpacity>
 
@@ -343,10 +347,10 @@ const styles = StyleSheet.create({
   divider: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: Theme.COLORS.white05,
   },
   dividerText: {
-    color: 'rgba(255,255,255,0.4)',
+    color: Theme.COLORS.white40,
     fontSize: 11,
     marginHorizontal: 15,
     fontWeight: '600',
@@ -361,11 +365,11 @@ const styles = StyleSheet.create({
     width: 60,
     height: 60,
     borderRadius: 30,
-    backgroundColor: 'rgba(255,255,255,0.05)',
+    backgroundColor: Theme.COLORS.white05,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.08)',
+    borderColor: Theme.COLORS.white10,
   },
   socialIcon: {
     color: Theme.COLORS.text,

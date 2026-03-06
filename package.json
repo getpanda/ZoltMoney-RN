@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "android": "react-native run-android",
+    "android:dev": "ENVFILE=.env.dev react-native run-android --mode devDebug",
+    "android:prod": "ENVFILE=.env.prod react-native run-android --mode prodRelease",
     "ios": "react-native run-ios",
+    "ios:dev": "ENVFILE=.env.dev react-native run-ios --mode Debug",
+    "ios:prod": "ENVFILE=.env.prod react-native run-ios --mode Release",
     "lint": "eslint .",
     "start": "react-native start",
     "test": "jest",

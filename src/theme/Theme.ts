@@ -4,19 +4,19 @@
 
 export const COLORS = {
   // Primary - Gold/Greenish
-  primary: '#BFA16F', // Premium Gold
-  primaryDark: '#8C734B',
-  accent: '#D4BA7F', // Brighter Gold
+  primary: '#D4BA7F', // Panda Gold (from ios-js)
+  primaryDark: '#BFA16F',
+  accent: '#E5D1A2',
 
   // Backgrounds
-  background: '#021511', // Deep Dark Green
-  surface: '#0A2621',
-  surfaceLight: '#123D35',
+  background: '#021511', // Deep Dark Green (from ios-js)
+  surface: '#202020', // Secondary (from ios-js)
+  surfaceLight: '#2C2C2C',
 
   // Text
   text: '#FFFFFF',
-  textSecondary: 'hsl(142, 10%, 70%)',
-  textMuted: 'hsl(142, 10%, 50%)',
+  textSecondary: '#C0C0C0', // Gray Text (from ios-js)
+  textMuted: '#808080',
 
   // States
   success: 'hsl(142, 70%, 45%)',

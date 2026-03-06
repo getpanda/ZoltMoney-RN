@@ -60,6 +60,10 @@
       "prettier --write"
     ]
   },
+  "overrides": {
+    "fbjs": "^3.0.4",
+    "react-native-web": "^0.19.12"
+  },
   "engines": {
     "node": ">= 22.11.0"
   }

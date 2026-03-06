@@ -78,8 +78,22 @@ android {
     compileSdk rootProject.ext.compileSdkVersion
 
     namespace "money.getpanda.pandamoney.refactor"
+    flavorDimensions "default"
+    
+    productFlavors {
+        dev {
+            dimension "default"
+            applicationId "money.getpanda.pandamoney.refactor"
+            resValue "string", "app_name", "Panda-Dev-RN"
+        }
+        prod {
+            dimension "default"
+            applicationId "money.getpanda.pandamoney"
+            resValue "string", "app_name", "PandaMoney-RN"
+        }
+    }
+
     defaultConfig {
-        applicationId "money.getpanda.pandamoney.refactor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

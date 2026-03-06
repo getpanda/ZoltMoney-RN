@@ -273,8 +273,9 @@
 					"-ObjC",
 					"-lc++",
 				);
+				APP_DISPLAY_NAME = "Panda-Dev-RN";
 				PRODUCT_BUNDLE_IDENTIFIER = money.getpanda.pandamoney.refactor;
-                                DEVELOPMENT_TEAM = 28W5R742JY;
+				DEVELOPMENT_TEAM = 28W5R742JY;
 				PRODUCT_NAME = ZoltMoney;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -303,8 +304,9 @@
 					"-ObjC",
 					"-lc++",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = money.getpanda.pandamoney.refactor;
-                                DEVELOPMENT_TEAM = 28W5R742JY;
+				APP_DISPLAY_NAME = "PandaMoney-RN";
+				PRODUCT_BUNDLE_IDENTIFIER = money.getpanda.pandamoney;
+				DEVELOPMENT_TEAM = 28W5R742JY;
 				PRODUCT_NAME = ZoltMoney;
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SWIFT_VERSION = 5.0;

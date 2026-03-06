@@ -67,6 +67,7 @@ const CountryPicker: React.FC<CountryPickerProps> = ({
     return COUNTRIES.filter(
       c =>
         c.name.toLowerCase().includes(search.toLowerCase()) ||
+        c.code.toLowerCase().includes(search.toLowerCase()) ||
         c.callingCode.includes(search),
     );
   }, [search]);

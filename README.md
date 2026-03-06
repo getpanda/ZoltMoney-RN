@@ -1,6 +1,6 @@
-# ZoltMoney React Native App
+# PandaMoney-RN
 
-A premium, industry-level React Native application for ZoltMoney, featuring a robust architecture, secure biometric authentication, and multi-language support.
+A premium, industry-level React Native application for PandaMoney-RN, featuring a robust architecture, secure biometric authentication, and multi-language support.
 
 ## 🚀 Key Features
 
@@ -103,4 +103,4 @@ npx stallion-cli push -b main -p <STALLION_PROJECT_ID> -t <STALLION_CI_TOKEN>
 - **Type Check**: `npx tsc`
 
 ---
-*Built with ❤️ by the ZoltMoney Team.*
+*Built with ❤️ by the PandaMoney Team.*

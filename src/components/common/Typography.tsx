@@ -9,7 +9,7 @@ interface TypographyProps extends TextProps {
 }
 
 /**
- * Standardized Typography component for ZoltMoney.
+ * Standardized Typography component for PandaMoney-RN.
  */
 export default function Typography({
   variant = 'body',

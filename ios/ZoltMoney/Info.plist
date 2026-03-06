@@ -7,7 +7,7 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>ZoltMoney</string>
+	<string>PandaMoney-RN</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIconName</key>
@@ -38,9 +38,9 @@
 		<true/>
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>ZoltMoney needs your location to provide personalized financial services and security alerts based on your region.</string>
+	<string>PandaMoney-RN needs your location to provide personalized financial services and security alerts based on your region.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>ZoltMoney uses Face ID to provide a secure and fast way to access your account.</string>
+	<string>PandaMoney-RN uses Face ID to provide a secure and fast way to access your account.</string>
 	<key>RCTNewArchEnabled</key>
 	<true/>
 	<key>UILaunchStoryboardName</key>

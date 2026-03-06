@@ -11,7 +11,7 @@
     "auth": {
         "login": {
             "title": "Welcome Back",
-            "subtitle": "Sign in to continue to ZoltMoney",
+            "subtitle": "Sign in to continue to PandaMoney-RN",
             "phone_placeholder": "Phone Number",
             "send_otp": "Send OTP",
             "apple_login": "Sign in with Apple",

@@ -41,7 +41,10 @@ const LoginScreen = ({ navigation }: any) => {
   // Get dynamic placeholder and validation from libphonenumber
   const phoneValidation = React.useMemo(() => {
     try {
-      const example = phoneUtil.getExampleNumber(selectedCountry.code);
+      const example = phoneUtil.getExampleNumberForType(
+        selectedCountry.code,
+        PhoneNumberType.MOBILE,
+      );
       if (!example)
         return { placeholder: '123 456 789', isValid: false, e164Value: '' };
 

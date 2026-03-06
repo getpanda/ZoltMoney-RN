@@ -24,7 +24,6 @@
     "react-native": "0.84.1",
     "react-native-biometrics": "^3.0.1",
     "react-native-keychain": "^10.0.0",
-    "react-native-phone-number-input": "^2.1.0",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.24.0",
     "react-native-stallion": "^2.3.2"

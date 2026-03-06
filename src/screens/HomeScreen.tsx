@@ -345,7 +345,7 @@ const styles = StyleSheet.create({
   earnPill: {
     paddingHorizontal: 14,
     paddingVertical: 7,
-    borderRadius: 20,
+    borderRadius: Theme.BORDER_RADIUS.full,
     backgroundColor: Theme.COLORS.primary10,
     borderWidth: 1,
     borderColor: Theme.COLORS.primary,
@@ -402,7 +402,7 @@ const styles = StyleSheet.create({
   sendMoneyBtn: {
     alignSelf: 'flex-end',
     backgroundColor: Theme.COLORS.white10,
-    borderRadius: 20,
+    borderRadius: Theme.BORDER_RADIUS.full,
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderWidth: 1,
@@ -484,7 +484,7 @@ const styles = StyleSheet.create({
   },
   promoBtn: {
     backgroundColor: Theme.COLORS.white92,
-    borderRadius: 20,
+    borderRadius: Theme.BORDER_RADIUS.full,
     paddingHorizontal: 20,
     paddingVertical: 8,
     alignSelf: 'flex-start',
@@ -577,7 +577,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: Theme.COLORS.white05,
-    borderRadius: 20,
+    borderRadius: Theme.BORDER_RADIUS.full,
     paddingHorizontal: 12,
     paddingVertical: 6,
   },

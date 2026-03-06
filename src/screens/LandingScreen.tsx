@@ -110,7 +110,7 @@ const styles = StyleSheet.create({
   },
   secondaryButton: {
     height: 60,
-    borderRadius: 16,
+    borderRadius: Theme.BORDER_RADIUS.full,
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,

@@ -91,7 +91,7 @@ const Button: React.FC<ButtonProps> = ({
 const styles = StyleSheet.create({
   container: {
     height: 52,
-    borderRadius: BORDER_RADIUS.md,
+    borderRadius: BORDER_RADIUS.full,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: SPACING.lg,

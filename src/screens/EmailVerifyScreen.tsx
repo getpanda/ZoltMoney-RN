@@ -182,7 +182,7 @@ const styles = StyleSheet.create({
   iconButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
+    borderRadius: Theme.BORDER_RADIUS.full,
     borderWidth: 1.5,
     borderColor: Theme.COLORS.primary,
     justifyContent: 'center',

@@ -1,0 +1,67 @@
+{
+  "project_info": {
+    "project_number": "563547789176",
+    "project_id": "pandamoney-e70bb",
+    "storage_bucket": "pandamoney-e70bb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563547789176:android:b1945d8932723068195a8d",
+        "android_client_info": {
+          "package_name": "money.getpanda.pandamoney"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWtt4P6rVkLyaLrcv14xwNiV680LyjYgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563547789176:android:56bb01c0e11be390195a8d",
+        "android_client_info": {
+          "package_name": "money.getpanda.pandamoney.dev"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWtt4P6rVkLyaLrcv14xwNiV680LyjYgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:563547789176:android:91a6d75e7fce5e16195a8d",
+        "android_client_info": {
+          "package_name": "money.getpanda.pandamoney.refactor"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWtt4P6rVkLyaLrcv14xwNiV680LyjYgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

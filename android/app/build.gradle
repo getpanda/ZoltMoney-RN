@@ -91,11 +91,17 @@ android {
             dimension "default"
             applicationId "money.getpanda.pandamoney.refactor"
             resValue "string", "app_name", "Panda-Dev-RN"
+            resValue "string", "facebook_app_id", project.env.get("FACEBOOK_APP_ID")
+            resValue "string", "fb_login_protocol_scheme", "fb" + project.env.get("FACEBOOK_APP_ID")
+            resValue "string", "facebook_client_token", project.env.get("FACEBOOK_CLIENT_TOKEN")
         }
         prod {
             dimension "default"
             applicationId "money.getpanda.pandamoney"
             resValue "string", "app_name", "PandaMoney-RN"
+            resValue "string", "facebook_app_id", project.env.get("FACEBOOK_APP_ID")
+            resValue "string", "fb_login_protocol_scheme", "fb" + project.env.get("FACEBOOK_APP_ID")
+            resValue "string", "facebook_client_token", project.env.get("FACEBOOK_CLIENT_TOKEN")
         }
     }
 
@@ -137,3 +143,5 @@ dependencies {
         implementation jscFlavor
     }
 }
+
+apply plugin: "com.google.gms.google-services"

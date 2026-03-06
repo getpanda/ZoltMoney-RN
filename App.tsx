@@ -12,6 +12,10 @@ import Config from 'react-native-config';
 
 // Initialize i18n
 import './src/i18n';
+import * as Sentry from '@sentry/react-native';
+import { PostHogProvider } from 'posthog-react-native';
+import appsFlyer from 'react-native-appsflyer';
+import { Settings } from 'react-native-fbsdk-next';
 
 // Components & Services
 import { StorageService } from './src/services/StorageService';
@@ -78,6 +82,51 @@ function App() {
     getInitialRoute().then(route => {
       setInitialRoute(route);
     });
+
+    // Initialize Sentry
+    if (!__DEV__) {
+      const sentryDsn = Platform.select({
+        ios: Config.SENTRY_DSN_IOS,
+        android: Config.SENTRY_DSN_ANDROID,
+      });
+      if (sentryDsn) {
+        Sentry.init({
+          dsn: sentryDsn,
+        });
+      }
+    }
+
+    // Initialize Facebook (Meta) SDK
+    try {
+      if (Config.FACEBOOK_APP_ID) {
+        Settings.setAppID(Config.FACEBOOK_APP_ID);
+      }
+      if (Config.FACEBOOK_CLIENT_TOKEN) {
+        Settings.setClientToken(Config.FACEBOOK_CLIENT_TOKEN);
+      }
+      Settings.initializeSDK();
+      Logger.info('Facebook SDK initialized');
+    } catch (e) {
+      Logger.error('Facebook SDK initialization failed', e);
+    }
+
+    // Initialize AppsFlyer
+    try {
+      appsFlyer.initSdk(
+        {
+          devKey: Config.APPSFLYER_DEV_KEY || '',
+          isDebug: __DEV__,
+          appId: Config.APPSFLYER_APP_ID || '', // App ID for iOS
+          onInstallConversionDataListener: true,
+          onDeepLinkListener: true,
+          timeToWaitForATTUserAuthorization: 10,
+        },
+        (result: any) => Logger.info('AppsFlyer initialized', result),
+        (error: any) => Logger.error('AppsFlyer initialization failed', error),
+      );
+    } catch (e) {
+      Logger.error('AppsFlyer setup failed', e);
+    }
 
     // Initialize Intercom
     try {
@@ -146,15 +195,22 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <SafeAreaProvider>
-        <StatusBar
-          barStyle="light-content"
-          backgroundColor={Theme.COLORS.background}
-        />
-        <NavigationContainer ref={navigationRef} theme={AppTheme}>
-          <AppNavigator initialRoute={initialRoute} />
-        </NavigationContainer>
-      </SafeAreaProvider>
+      <PostHogProvider
+        apiKey={Config.POSTHOG_API_KEY || ''}
+        options={{
+          host: Config.POSTHOG_HOST || 'https://app.posthog.com',
+        }}
+      >
+        <SafeAreaProvider>
+          <StatusBar
+            barStyle="light-content"
+            backgroundColor={Theme.COLORS.background}
+          />
+          <NavigationContainer ref={navigationRef} theme={AppTheme}>
+            <AppNavigator initialRoute={initialRoute} />
+          </NavigationContainer>
+        </SafeAreaProvider>
+      </PostHogProvider>
     </ErrorBoundary>
   );
 }

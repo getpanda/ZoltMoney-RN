@@ -60,6 +60,28 @@
 		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
+	<key>FacebookAppID</key>
+	<string>$(FACEBOOK_APP_ID)</string>
+	<key>FacebookClientToken</key>
+	<string>$(FACEBOOK_CLIENT_TOKEN)</string>
+	<key>FacebookDisplayName</key>
+	<string>PandaMoney</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>fb$(FACEBOOK_APP_ID)</string>
+			</array>
+		</dict>
+	</array>
+    <key>LSApplicationQueriesSchemes</key>
+    <array>
+        <string>fbapi</string>
+        <string>fb-messenger-share-api</string>
+    </array>
+	<key>SENTRY_DSN</key>
+	<string>$(SENTRY_DSN_IOS)</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
 </dict>

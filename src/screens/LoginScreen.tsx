@@ -108,7 +108,7 @@ const LoginScreen = ({ navigation }: any) => {
                   ref={phoneNumberRef}
                   style={styles.customNumberInput}
                   placeholder="201-555-0123"
-                  placeholderTextColor="rgba(212, 186, 127, 0.25)"
+                  placeholderTextColor="rgba(255, 255, 255, 0.2)"
                   keyboardType="phone-pad"
                   value={value}
                   selectionColor={Theme.COLORS.primary}

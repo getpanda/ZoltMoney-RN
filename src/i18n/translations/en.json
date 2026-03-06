@@ -10,8 +10,8 @@
     },
     "auth": {
         "login": {
-            "title": "Welcome Back",
-            "subtitle": "Sign in to continue to PandaMoney-RN",
+            "title": "What's your mobile number?",
+            "subtitle": "We will send you a verification code",
             "phone_placeholder": "Phone Number",
             "send_otp": "Send OTP",
             "apple_login": "Sign in with Apple",
@@ -101,14 +101,14 @@
         }
     },
     "landing": {
-        "title_part1": "Zolt",
+        "title_part1": "Panda",
         "title_part2": "Money",
         "headline": "The Future of\nSmart Finance",
         "description": "Manage your wealth with precision and ease. Experience the power of\npure native performance.",
         "get_started": "Get Started"
     },
     "support": {
-        "title": "Zolt Support",
+        "title": "PandaMoney Support",
         "online": "Online",
         "input_placeholder": "Type a message...",
         "send": "Send",

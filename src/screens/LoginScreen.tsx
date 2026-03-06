@@ -3,19 +3,21 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
   Keyboard,
   TextInput,
   Alert,
+  Linking,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { loginInit } from '../api/auth';
 import Theme from '../theme/Theme';
 import { Typography, Button, CountryPicker } from '../components/common';
 import { Country, COUNTRIES } from '../components/common/CountryPicker';
+import SupportIcon from '../assets/images/support_icon.svg';
 import {
   PhoneNumberUtil,
   PhoneNumberFormat,
@@ -157,13 +159,17 @@ const LoginScreen = ({ navigation }: any) => {
                 </Typography>
               </TouchableOpacity>
               <TouchableOpacity style={styles.supportIcon}>
-                <Typography style={styles.supportIconEmoji}>
-                  {t('common.support_emoji')}
-                </Typography>
+                <SupportIcon width={34} height={34} />
               </TouchableOpacity>
             </View>
 
-            <Typography variant="h1" style={styles.title}>
+            <Typography
+              variant="h1"
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              minimumFontScale={0.8}
+              style={styles.title}
+            >
               {t('auth.login.title')}
             </Typography>
             <Typography variant="bodySecondary" style={styles.subtitle}>
@@ -230,34 +236,51 @@ const LoginScreen = ({ navigation }: any) => {
             <View style={styles.flexFiller} />
 
             <View style={styles.bottomSection}>
-              <TouchableOpacity
-                style={styles.termsRow}
-                onPress={() => setIsTermsAccepted(!isTermsAccepted)}
-              >
-                <View
-                  style={[
-                    styles.checkbox,
-                    isTermsAccepted && styles.checkboxChecked,
-                  ]}
+              <View style={styles.termsContainer}>
+                <TouchableOpacity
+                  style={styles.checkboxWrapper}
+                  onPress={() => setIsTermsAccepted(!isTermsAccepted)}
                 >
-                  {isTermsAccepted && (
-                    <Typography variant="caption" style={styles.checkmark}>
-                      ✓
+                  <View
+                    style={[
+                      styles.checkbox,
+                      isTermsAccepted && styles.checkboxChecked,
+                    ]}
+                  >
+                    {isTermsAccepted && (
+                      <Typography variant="caption" style={styles.checkmark}>
+                        ✓
+                      </Typography>
+                    )}
+                  </View>
+                </TouchableOpacity>
+
+                <View style={styles.termsTextWrapper}>
+                  <Typography variant="caption" style={styles.termsText}>
+                    {t('auth.login.terms_prefix')}{' '}
+                    <Typography
+                      variant="caption"
+                      style={styles.linkText}
+                      onPress={() =>
+                        Linking.openURL('https://zolt.money/terms-of-use')
+                      }
+                    >
+                      {t('auth.login.terms_link')}
+                    </Typography>{' '}
+                    {t('auth.login.terms_and')}{' '}
+                    <Typography
+                      variant="caption"
+                      style={styles.linkText}
+                      onPress={() =>
+                        Linking.openURL('https://zolt.money/privacy-policy')
+                      }
+                    >
+                      {t('auth.login.terms_privacy_link')}
                     </Typography>
-                  )}
+                    {t('auth.login.terms_dot')}
+                  </Typography>
                 </View>
-                <Typography variant="caption" style={styles.termsText}>
-                  {t('auth.login.terms_prefix')}
-                  <Typography variant="caption" style={styles.linkText}>
-                    {t('auth.login.terms_link')}
-                  </Typography>
-                  {t('auth.login.terms_and')}
-                  <Typography variant="caption" style={styles.linkText}>
-                    {t('auth.login.terms_privacy_link')}
-                  </Typography>
-                  {t('auth.login.terms_dot')}
-                </Typography>
-              </TouchableOpacity>
+              </View>
 
               <Button
                 title={t('common.continue')}
@@ -280,11 +303,11 @@ const styles = StyleSheet.create({
   },
   inner: {
     flex: 1,
-    paddingHorizontal: 25,
+    paddingHorizontal: 24,
   },
   header: {
     marginTop: 10,
-    marginBottom: 30,
+    marginBottom: 10,
   },
   topRow: {
     flexDirection: 'row',
@@ -293,9 +316,10 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   backButton: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   backButtonText: {
     color: Theme.COLORS.text,
@@ -303,21 +327,20 @@ const styles = StyleSheet.create({
     fontWeight: '300',
   },
   supportIcon: {
-    width: 40,
-    height: 40,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
-    opacity: 0.8,
   },
   supportIconEmoji: {
-    fontSize: 24,
+    fontSize: 22,
   },
   title: {
-    fontSize: 32,
-    fontWeight: '500',
+    fontSize: 26, // Slightly reduced from 28
+    fontWeight: '700',
     color: Theme.COLORS.text,
-    marginBottom: 12,
-    lineHeight: 40,
+    marginBottom: 4,
+    lineHeight: 34,
   },
   subtitle: {
     fontSize: 16,
@@ -329,7 +352,7 @@ const styles = StyleSheet.create({
   },
   phoneInputWrapper: {
     marginTop: 0,
-    marginBottom: 60,
+    marginBottom: 40,
   },
   customInputRow: {
     flexDirection: 'row',
@@ -366,13 +389,21 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomSection: {
-    marginBottom: 20,
+    marginBottom: Theme.SPACING.lg,
   },
-  termsRow: {
+  termsContainer: {
     flexDirection: 'row',
-    alignItems: 'flex-start',
-    marginBottom: 25,
-    paddingRight: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 24,
+    paddingHorizontal: 10,
+  },
+  checkboxWrapper: {
+    padding: 8,
+    marginLeft: -8,
+  },
+  termsTextWrapper: {
+    flexShrink: 1,
   },
   checkbox: {
     width: 22,
@@ -397,6 +428,7 @@ const styles = StyleSheet.create({
     color: Theme.COLORS.textSecondary,
     fontSize: 13,
     lineHeight: 18,
+    textAlign: 'center',
   },
   linkText: {
     color: Theme.COLORS.primary,

@@ -1,11 +1,6 @@
 import React from 'react';
-import {
-  View,
-  StyleSheet,
-  ImageBackground,
-  SafeAreaView,
-  StatusBar,
-} from 'react-native';
+import { View, StyleSheet, ImageBackground, StatusBar } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import Theme from '../theme/Theme';
 import { Typography, Button } from '../components/common';
@@ -77,7 +72,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    paddingHorizontal: 30,
+    paddingHorizontal: 24,
     justifyContent: 'center',
     paddingTop: 60,
   },
@@ -105,8 +100,8 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   footer: {
-    paddingHorizontal: 30,
-    paddingBottom: 40,
+    paddingHorizontal: 24,
+    paddingBottom: Theme.SPACING.lg,
   },
   secondaryButton: {
     height: 60,

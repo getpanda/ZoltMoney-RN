@@ -3,7 +3,6 @@ import {
   View,
   StyleSheet,
   TouchableOpacity,
-  SafeAreaView,
   KeyboardAvoidingView,
   Platform,
   TouchableWithoutFeedback,
@@ -12,12 +11,14 @@ import {
   TextInput,
   Alert,
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
 import { loginInit, loginVerify } from '../api/auth';
 import { StorageService } from '../services/StorageService';
 import Theme from '../theme/Theme';
 import Typography from '../components/common/Typography';
 import Button from '../components/common/Button';
+import SupportIcon from '../assets/images/support_icon.svg';
 
 const OtpScreen = ({ navigation, route }: any) => {
   const { t } = useTranslation();
@@ -173,9 +174,7 @@ const OtpScreen = ({ navigation, route }: any) => {
                 </Typography>
               </TouchableOpacity>
               <TouchableOpacity style={styles.supportIcon}>
-                <Typography style={styles.supportEmoji}>
-                  {t('common.support_emoji')}
-                </Typography>
+                <SupportIcon width={34} height={34} />
               </TouchableOpacity>
             </View>
 
@@ -296,23 +295,23 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   backButton: {
-    padding: 8,
+    width: 44,
+    height: 44,
+    justifyContent: 'center',
+    alignItems: 'flex-start',
   },
   backButtonText: {
     color: Theme.COLORS.text,
     fontSize: 24,
   },
   supportIcon: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    borderWidth: 1.5,
-    borderColor: Theme.COLORS.primary,
+    width: 44,
+    height: 44,
     justifyContent: 'center',
     alignItems: 'center',
   },
   supportEmoji: {
-    fontSize: 24,
+    fontSize: 22,
   },
   title: {
     color: Theme.COLORS.text,
@@ -384,7 +383,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   bottomSection: {
-    marginBottom: 20,
+    marginBottom: Theme.SPACING.lg,
   },
 });
 

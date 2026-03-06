@@ -11,18 +11,18 @@ import Intercom from '@intercom/intercom-react-native';
 import Config from 'react-native-config';
 
 // Initialize i18n
-import './src/i18n';
+import './i18n';
 import * as Sentry from '@sentry/react-native';
 import { PostHogProvider } from 'posthog-react-native';
 import appsFlyer from 'react-native-appsflyer';
 import { Settings } from 'react-native-fbsdk-next';
 
 // Components & Services
-import { StorageService } from './src/services/StorageService';
-import Theme from './src/theme/Theme';
-import AppNavigator from './src/navigation/AppNavigator';
-import { ErrorBoundary } from './src/components/common';
-import Logger from './src/utils/logger';
+import { StorageService } from './services/StorageService';
+import Theme from './theme/Theme';
+import AppNavigator from './navigation/AppNavigator';
+import { ErrorBoundary } from './components/common';
+import Logger from './utils/logger';
 
 const AppTheme = {
   ...DefaultTheme,

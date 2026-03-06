@@ -1,4 +1,4 @@
-package money.getzolt.zoltmoney
+package money.getpanda.pandamoney.refactor
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

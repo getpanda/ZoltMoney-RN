@@ -77,9 +77,9 @@ android {
     buildToolsVersion rootProject.ext.buildToolsVersion
     compileSdk rootProject.ext.compileSdkVersion
 
-    namespace "money.getzolt.zoltmoney"
+    namespace "money.getpanda.pandamoney.refactor"
     defaultConfig {
-        applicationId "money.getzolt.zoltmoney"
+        applicationId "money.getpanda.pandamoney.refactor"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

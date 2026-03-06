@@ -10,16 +10,16 @@ export const COLORS = {
 
   // Backgrounds
   background: '#021511', // Deep Dark Green (from ios-js)
-  surface: '#202020', // Secondary (from ios-js)
-  surfaceLight: '#2C2C2C',
+  surface: '#151515', // Dark Secondary (from web)
+  surfaceLight: '#2F2E2F', // Card/Input (from web)
 
   // Text
   text: '#FFFFFF',
-  textSecondary: '#C0C0C0', // Gray Text (from ios-js)
-  textMuted: '#808080',
+  textSecondary: '#DADADA', // Gray Text (from web)
+  textMuted: '#8B8888', // Muted Text (from web)
 
   // States
-  success: 'hsl(142, 70%, 45%)',
+  success: '#3CBA84', // Panda Green (from web)
   error: 'hsl(0, 84%, 60%)',
   warning: 'hsl(38, 92%, 50%)',
 

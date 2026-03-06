@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     TouchableOpacity,
     SafeAreaView,
@@ -9,11 +8,14 @@ import {
     ScrollView,
     Alert,
 } from 'react-native';
-import { COLORS } from '../theme/colors';
+import { useTranslation } from 'react-i18next';
+import Theme from '../theme/Theme';
+import Typography from '../components/common/Typography';
 import { StorageService } from '../services/StorageService';
 import { getWalletBalance } from '../api/auth';
 
 const HomeScreen = ({ navigation }: any) => {
+    const { t } = useTranslation();
     const [activeTab, setActiveTab] = useState<'Home' | 'History'>('Home');
     const [sendAmount] = useState('10,000');
     const [balance, setBalance] = useState<string>('–');
@@ -46,12 +48,12 @@ const HomeScreen = ({ navigation }: any) => {
 
     const handleLogout = () => {
         Alert.alert(
-            'Logout',
-            'Are you sure you want to logout?',
+            t('home.logout_confirm.title'),
+            t('home.logout_confirm.message'),
             [
-                { text: 'Cancel', style: 'cancel' },
+                { text: t('home.logout_confirm.cancel'), style: 'cancel' },
                 {
-                    text: 'Logout',
+                    text: t('home.logout_confirm.confirm'),
                     style: 'destructive',
                     onPress: async () => {
                         await StorageService.logout();
@@ -69,19 +71,19 @@ const HomeScreen = ({ navigation }: any) => {
             {/* ── Top bar ── */}
             <View style={styles.topBar}>
                 <TouchableOpacity style={styles.avatarBtn} onPress={handleLogout}>
-                    <Text style={styles.avatarEmoji}>👤</Text>
-                    <Text style={styles.flagEmoji}>🇸🇪</Text>
+                    <Typography style={styles.avatarEmoji}>👤</Typography>
+                    <Typography style={styles.flagEmoji}>🇸🇪</Typography>
                 </TouchableOpacity>
 
                 <View style={styles.topRightRow}>
                     <TouchableOpacity style={styles.earnPill}>
-                        <Text style={styles.earnText}>Earn €10</Text>
+                        <Typography style={styles.earnText}>{t('home.earn_pill')}</Typography>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.iconCircle}>
-                        <Text style={styles.iconText}>🔔</Text>
+                        <Typography style={styles.iconText}>🔔</Typography>
                     </TouchableOpacity>
                     <TouchableOpacity style={styles.iconCircle}>
-                        <Text style={styles.iconText}>🎧</Text>
+                        <Typography style={styles.iconText}>🎧</Typography>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -91,14 +93,16 @@ const HomeScreen = ({ navigation }: any) => {
                 {/* ── Balance Card ── */}
                 <View style={styles.balanceCard}>
                     <View style={styles.balanceTopRow}>
-                        <Text style={styles.balanceLabel}>Your Balance -  EUR </Text>
-                        <Text style={styles.balanceChevron}>▾</Text>
+                        <Typography style={styles.balanceLabel}>
+                            {t('home.balance_label', { currency: 'EUR' })}
+                        </Typography>
+                        <Typography style={styles.balanceChevron}>▾</Typography>
                     </View>
-                    <Text style={styles.balanceAmount}>
+                    <Typography style={styles.balanceAmount}>
                         {balanceLoading ? '...' : `${balance} ${currency}`}
-                    </Text>
+                    </Typography>
                     <TouchableOpacity style={styles.sendMoneyBtn}>
-                        <Text style={styles.sendMoneyText}>Send Money</Text>
+                        <Typography style={styles.sendMoneyText}>{t('home.send_money')}</Typography>
                     </TouchableOpacity>
                 </View>
 
@@ -107,49 +111,49 @@ const HomeScreen = ({ navigation }: any) => {
                     {/* Add Money */}
                     <View style={styles.quickAction}>
                         <TouchableOpacity style={styles.actionCircle}>
-                            <Text style={styles.actionIcon}>＋</Text>
+                            <Typography style={styles.actionIcon}>＋</Typography>
                         </TouchableOpacity>
-                        <Text style={styles.actionLabel}>Add{'\n'}Money</Text>
+                        <Typography style={styles.actionLabel}>{t('home.quick_actions.add_money')}</Typography>
                     </View>
 
                     {/* Manage Beneficiary */}
                     <View style={styles.quickAction}>
                         <View style={styles.actionBadgeWrapper}>
-                            <Text style={styles.badgeText}>Under{'\n'}Maintenance</Text>
+                            <Typography style={styles.badgeText}>{t('home.quick_actions.under_maintenance')}</Typography>
                         </View>
                         <TouchableOpacity style={[styles.actionCircle, styles.actionCircleDim]}>
-                            <Text style={styles.actionIcon}>👤⊕</Text>
+                            <Typography style={styles.actionIcon}>👤⊕</Typography>
                         </TouchableOpacity>
-                        <Text style={styles.actionLabel}>Manage{'\n'}Beneficiary</Text>
+                        <Typography style={styles.actionLabel}>{t('home.quick_actions.manage_beneficiary')}</Typography>
                     </View>
 
                     {/* Send to Contacts */}
                     <View style={styles.quickAction}>
                         <View style={styles.actionBadgeWrapper}>
-                            <Text style={styles.badgeText}>Coming{'\n'}Soon</Text>
+                            <Typography style={styles.badgeText}>{t('home.quick_actions.coming_soon')}</Typography>
                         </View>
                         <TouchableOpacity style={[styles.actionCircle, styles.actionCircleDim]}>
-                            <Text style={styles.actionIcon}>🪪</Text>
+                            <Typography style={styles.actionIcon}>🪪</Typography>
                         </TouchableOpacity>
-                        <Text style={styles.actionLabel}>Send to{'\n'}Contacts</Text>
+                        <Typography style={styles.actionLabel}>{t('home.quick_actions.send_to_contacts')}</Typography>
                     </View>
                 </View>
 
                 {/* ── Promo Banner ── */}
                 <View style={styles.promoBanner}>
                     <View style={styles.promoContent}>
-                        <Text style={styles.promoTitle}>Unlock Your €10 Signup Bonus!!</Text>
-                        <Text style={styles.promoSubtitle}>
-                            Send total of €1,000+ and we'll drop €10{'\n'}Offer valid once per user.
-                        </Text>
+                        <Typography style={styles.promoTitle}>{t('home.promo.title')}</Typography>
+                        <Typography style={styles.promoSubtitle}>
+                            {t('home.promo.subtitle', { amount: '€1,000' })}
+                        </Typography>
                         <TouchableOpacity style={styles.promoBtn}>
-                            <Text style={styles.promoBtnText}>Send Now</Text>
+                            <Typography style={styles.promoBtnText}>{t('home.promo.button')}</Typography>
                         </TouchableOpacity>
                     </View>
                     <View style={styles.promoMascotWrapper}>
                         <View style={styles.promoMascot}>
-                            <Text style={styles.promoMascotText}>pa</Text>
-                            <Text style={styles.promoMascotStars}>✦ ✦</Text>
+                            <Typography style={styles.promoMascotText}>pa</Typography>
+                            <Typography style={styles.promoMascotStars}>✦ ✦</Typography>
                         </View>
                     </View>
                 </View>
@@ -161,34 +165,34 @@ const HomeScreen = ({ navigation }: any) => {
                 </View>
 
                 {/* ── Our Rates ── */}
-                <Text style={styles.ratesTitle}>Our Rates</Text>
+                <Typography style={styles.ratesTitle}>{t('home.rates.title')}</Typography>
 
                 <View style={styles.ratesCard}>
-                    <Text style={styles.ratesLabel}>You are sending</Text>
+                    <Typography style={styles.ratesLabel}>{t('home.rates.sending_label')}</Typography>
                     <View style={styles.ratesInputRow}>
-                        <Text style={styles.ratesAmount}>{sendAmount}</Text>
+                        <Typography style={styles.ratesAmount}>{sendAmount}</Typography>
                         <View style={styles.ratesCurrencyPill}>
-                            <Text style={styles.ratesFlagText}>🇸🇪</Text>
-                            <Text style={styles.ratesCurrencyText}> EUR</Text>
+                            <Typography style={styles.ratesFlagText}>🇸🇪</Typography>
+                            <Typography style={styles.ratesCurrencyText}> EUR</Typography>
                         </View>
                     </View>
                 </View>
 
                 <View style={styles.ratesResultCard}>
                     <View style={styles.ratesResultRow}>
-                        <Text style={styles.giftEmoji}>🎁</Text>
-                        <Text style={styles.ratesResultText}>
-                            Woo hoo! you get <Text style={styles.ratesHighlight}>200</Text>
-                        </Text>
+                        <Typography style={styles.giftEmoji}>🎁</Typography>
+                        <Typography style={styles.ratesResultText}>
+                            {t('home.rates.success_msg', { amount: '' })}<Typography style={styles.ratesHighlight}>200</Typography>
+                        </Typography>
                         <View style={styles.ratesDivider} />
                     </View>
                 </View>
 
                 <View style={styles.ratesRecipientCard}>
-                    <Text style={styles.ratesLabel}>Recipient gets</Text>
+                    <Typography style={styles.ratesLabel}>{t('home.rates.recipient_label')}</Typography>
                 </View>
 
-                <View style={{ height: 80 }} />
+                <View style={styles.bottomSpacer} />
             </ScrollView>
 
             {/* ── Bottom Tab Bar ── */}
@@ -197,16 +201,20 @@ const HomeScreen = ({ navigation }: any) => {
                     style={styles.tabItem}
                     onPress={() => setActiveTab('Home')}
                 >
-                    <Text style={[styles.tabIcon, activeTab === 'Home' && styles.tabIconActive]}>⌂</Text>
-                    <Text style={[styles.tabLabel, activeTab === 'Home' && styles.tabLabelActive]}>Home</Text>
+                    <Typography style={[styles.tabIcon, activeTab === 'Home' && styles.tabIconActive]}>⌂</Typography>
+                    <Typography style={[styles.tabLabel, activeTab === 'Home' && styles.tabLabelActive]}>
+                        {t('home.tabs.home')}
+                    </Typography>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                     style={styles.tabItem}
                     onPress={() => setActiveTab('History')}
                 >
-                    <Text style={[styles.tabIcon, activeTab === 'History' && styles.tabIconActive]}>⏱</Text>
-                    <Text style={[styles.tabLabel, activeTab === 'History' && styles.tabLabelActive]}>History</Text>
+                    <Typography style={[styles.tabIcon, activeTab === 'History' && styles.tabIconActive]}>⏱</Typography>
+                    <Typography style={[styles.tabLabel, activeTab === 'History' && styles.tabLabelActive]}>
+                        {t('home.tabs.history')}
+                    </Typography>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
@@ -216,7 +224,7 @@ const HomeScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
 
     // ── Top bar ──
@@ -234,7 +242,7 @@ const styles = StyleSheet.create({
         height: 42,
         borderRadius: 21,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -256,10 +264,10 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         backgroundColor: 'rgba(212, 186, 127, 0.18)',
         borderWidth: 1,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
     },
     earnText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 13,
         fontWeight: '600',
     },
@@ -268,7 +276,7 @@ const styles = StyleSheet.create({
         height: 36,
         borderRadius: 18,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -294,15 +302,15 @@ const styles = StyleSheet.create({
         marginBottom: 6,
     },
     balanceLabel: {
-        color: 'rgba(255,255,255,0.5)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 13,
     },
     balanceChevron: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 13,
     },
     balanceAmount: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 28,
         fontWeight: '700',
         marginBottom: 16,
@@ -317,7 +325,7 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.12)',
     },
     sendMoneyText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 14,
         fontWeight: '600',
     },
@@ -349,7 +357,7 @@ const styles = StyleSheet.create({
         height: 58,
         borderRadius: 29,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
         marginBottom: 8,
@@ -358,11 +366,11 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(212,186,127,0.35)',
     },
     actionIcon: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 22,
     },
     actionLabel: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 12,
         textAlign: 'center',
         lineHeight: 17,
@@ -379,7 +387,7 @@ const styles = StyleSheet.create({
     },
     promoContent: { flex: 1 },
     promoTitle: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 16,
         fontWeight: '700',
         marginBottom: 6,
@@ -416,12 +424,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     promoMascotText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 18,
         fontWeight: '700',
     },
     promoMascotStars: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 10,
         position: 'absolute',
         top: 4,
@@ -447,7 +455,7 @@ const styles = StyleSheet.create({
 
     // ── Rates ──
     ratesTitle: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 17,
         fontWeight: '700',
         marginBottom: 12,
@@ -461,9 +469,15 @@ const styles = StyleSheet.create({
         backgroundColor: 'rgba(255,255,255,0.03)',
     },
     ratesLabel: {
-        color: 'rgba(255,255,255,0.5)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 13,
         marginBottom: 8,
+    },
+    bottomSection: {
+        marginBottom: 20,
+    },
+    bottomSpacer: {
+        height: 80,
     },
     ratesInputRow: {
         flexDirection: 'row',
@@ -471,7 +485,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     ratesAmount: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 22,
         fontWeight: '600',
     },
@@ -485,7 +499,7 @@ const styles = StyleSheet.create({
     },
     ratesFlagText: { fontSize: 16 },
     ratesCurrencyText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 14,
         fontWeight: '600',
     },
@@ -509,7 +523,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     ratesHighlight: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: '700',
     },
     ratesDivider: {
@@ -533,7 +547,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         borderTopWidth: 1,
         borderTopColor: 'rgba(255,255,255,0.08)',
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
         paddingBottom: 8,
     },
     tabItem: {
@@ -547,14 +561,14 @@ const styles = StyleSheet.create({
         color: 'rgba(255,255,255,0.35)',
     },
     tabIconActive: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
     },
     tabLabel: {
         fontSize: 11,
         color: 'rgba(255,255,255,0.35)',
     },
     tabLabelActive: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: '600',
     },
 });

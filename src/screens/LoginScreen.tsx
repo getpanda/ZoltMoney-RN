@@ -1,7 +1,6 @@
 import React, { useState, useRef, useMemo } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     TouchableOpacity,
     SafeAreaView,
@@ -16,18 +15,22 @@ import {
     Modal,
     FlatList,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import PhoneInput from 'react-native-phone-number-input';
 import { AsYouTypeFormatter, PhoneNumberUtil } from 'google-libphonenumber';
-import { COLORS } from '../theme/colors';
 import { loginInit } from '../api/auth';
+import Theme from '../theme/Theme';
+import Typography from '../components/common/Typography';
+import Button from '../components/common/Button';
 
 
 const phoneUtil = PhoneNumberUtil.getInstance();
 
 const LoginScreen = ({ navigation }: any) => {
-
+    const { t } = useTranslation();
     const phoneInput = useRef<PhoneInput>(null);
     const phoneNumberRef = useRef<TextInput>(null);
+    // ... existing state ...
     const [isCountryPickerVisible, setIsCountryPickerVisible] = useState(false);
     const [selectedCountry, setSelectedCountry] = useState({ name: 'India', code: 'IN', callingCode: '91', flag: '🇮🇳' });
     const [countrySearch, setCountrySearch] = useState('');
@@ -96,8 +99,6 @@ const LoginScreen = ({ navigation }: any) => {
     const [isPhoneValid, setIsPhoneValid] = useState(false);
     const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
-
-
     const getApiErrorMessage = (error: any, fallback: string): string => {
         const data = error?.response?.data;
         if (!data) return fallback;
@@ -113,7 +114,7 @@ const LoginScreen = ({ navigation }: any) => {
                 selectedCountry,
             });
         } catch (error: any) {
-            Alert.alert('Error', getApiErrorMessage(error, 'Failed to send OTP. Please try again.'));
+            Alert.alert(t('common.error'), getApiErrorMessage(error, t('auth.login.send_otp_error')));
         } finally {
             setLoading(false);
         }
@@ -121,7 +122,6 @@ const LoginScreen = ({ navigation }: any) => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <StatusBar barStyle="light-content" />
             <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                 <KeyboardAvoidingView
                     behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -133,15 +133,15 @@ const LoginScreen = ({ navigation }: any) => {
                                 onPress={() => navigation.goBack()}
                                 style={styles.backButton}
                             >
-                                <Text style={styles.backButtonText}>←</Text>
+                                <Typography variant="h3" style={styles.backButtonText}>←</Typography>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.supportIcon}>
-                                <Text style={{ fontSize: 24 }}>🎧</Text>
+                                <Typography style={{ fontSize: 24 }}>🎧</Typography>
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.title}>What's your mobile number?</Text>
-                        <Text style={styles.subtitle}>We will send you a verification code</Text>
+                        <Typography variant="h1" style={styles.title}>{t('auth.login.title')}</Typography>
+                        <Typography variant="bodySecondary" style={styles.subtitle}>{t('auth.login.subtitle')}</Typography>
                     </View>
 
                     <View style={styles.form}>
@@ -153,10 +153,10 @@ const LoginScreen = ({ navigation }: any) => {
                                         setIsCountryPickerVisible(true);
                                     }}
                                 >
-                                    <Text style={styles.phoneCodeText}>
+                                    <Typography style={styles.phoneCodeText}>
                                         {`+${selectedCountry.callingCode}`}
-                                    </Text>
-                                    <Text style={styles.dropdownArrow}>⌵</Text>
+                                    </Typography>
+                                    <Typography style={styles.dropdownArrow}>⌵</Typography>
                                 </TouchableOpacity>
 
                                 <TextInput
@@ -166,7 +166,7 @@ const LoginScreen = ({ navigation }: any) => {
                                     placeholderTextColor="rgba(212, 186, 127, 0.25)"
                                     keyboardType="phone-pad"
                                     value={value}
-                                    selectionColor={COLORS.primary}
+                                    selectionColor={Theme.COLORS.primary}
                                     onChangeText={(text) => {
                                         // 1. Remove non-numeric characters to get raw input
                                         const cleaned = text.replace(/[^0-9]/g, '');
@@ -233,14 +233,14 @@ const LoginScreen = ({ navigation }: any) => {
                                         {/* Search bar */}
                                         <View style={styles.countrySearchContainer}>
                                             <View style={styles.searchBox}>
-                                                <Text style={styles.searchIconText}>⌕</Text>
+                                                <Typography style={styles.searchIconText}>⌕</Typography>
                                                 <TextInput
                                                     style={styles.searchInput}
                                                     placeholder="Search"
                                                     placeholderTextColor="rgba(255,255,255,0.35)"
                                                     value={countrySearch}
                                                     onChangeText={setCountrySearch}
-                                                    selectionColor={COLORS.primary}
+                                                    selectionColor={Theme.COLORS.primary}
                                                     autoCorrect={false}
                                                     autoFocus
                                                 />
@@ -266,9 +266,9 @@ const LoginScreen = ({ navigation }: any) => {
                                                             setTimeout(() => phoneNumberRef.current?.focus(), 300);
                                                         }}
                                                     >
-                                                        <Text style={styles.countryFlag}>{item.flag}</Text>
-                                                        <Text style={styles.countryCallingCode}>+{item.callingCode}</Text>
-                                                        <Text style={styles.countryName}>{item.name}</Text>
+                                                        <Typography style={styles.countryFlag}>{item.flag}</Typography>
+                                                        <Typography style={styles.countryCallingCode}>+{item.callingCode}</Typography>
+                                                        <Typography style={styles.countryName}>{item.name}</Typography>
                                                     </TouchableOpacity>
                                                 );
                                             }}
@@ -286,52 +286,36 @@ const LoginScreen = ({ navigation }: any) => {
                                 onPress={() => setIsTermsAccepted(!isTermsAccepted)}
                             >
                                 <View style={[styles.checkbox, isTermsAccepted && styles.checkboxChecked]}>
-                                    {isTermsAccepted && <Text style={styles.checkmark}>✓</Text>}
+                                    {isTermsAccepted && <Typography variant="caption" style={styles.checkmark}>✓</Typography>}
                                 </View>
-                                <Text style={styles.termsText}>
-                                    By Continuing, you agree to our{' '}
-                                    <Text style={styles.linkText}>Terms of Use</Text> and{' '}
-                                    <Text style={styles.linkText}>Privacy Policy</Text>.
-                                </Text>
+                                <Typography variant="caption" style={styles.termsText}>
+                                    {t('auth.login.terms_prefix')}
+                                    <Typography variant="caption" style={styles.linkText}>{t('auth.login.terms_link')}</Typography> and{' '}
+                                    <Typography variant="caption" style={styles.linkText}>{t('auth.login.privacy_link')}</Typography>.
+                                </Typography>
                             </TouchableOpacity>
 
-                            <TouchableOpacity
-                                style={[
-                                    styles.primaryButton,
-                                    (loading || !isPhoneValid || !isTermsAccepted) && styles.buttonDisabled,
-                                    (!loading && isPhoneValid && isTermsAccepted) && styles.buttonEnabled,
-                                ]}
+                            <Button
+                                title={t('common.continue')}
+                                loading={loading}
+                                disabled={!isPhoneValid || !isTermsAccepted}
                                 onPress={handleSendOtp}
-                                disabled={loading || !isPhoneValid || !isTermsAccepted}
-                            >
-                                <View style={styles.buttonInner}>
-                                    {loading ? (
-                                        <ActivityIndicator color={COLORS.background} />
-                                    ) : (
-                                        <Text style={[
-                                            styles.buttonText,
-                                            (!loading && isPhoneValid && isTermsAccepted) && styles.buttonTextEnabled,
-                                        ]}>
-                                            Continue
-                                        </Text>
-                                    )}
-                                </View>
-                            </TouchableOpacity>
+                            />
 
                             <View style={styles.socialWrapper}>
                                 <View style={styles.dividerContainer}>
                                     <View style={styles.divider} />
-                                    <Text style={styles.dividerText}>OR LOGIN WITH</Text>
+                                    <Typography variant="caption" style={styles.dividerText}>{t('auth.login.social_divider')}</Typography>
                                     <View style={styles.divider} />
                                 </View>
 
                                 <View style={styles.socialContainer}>
                                     <TouchableOpacity style={styles.socialButton}>
-                                        <Text style={styles.socialIcon}>G</Text>
+                                        <Typography variant="h3" style={styles.socialIcon}>G</Typography>
                                     </TouchableOpacity>
                                     {Platform.OS === 'ios' && (
                                         <TouchableOpacity style={styles.socialButton}>
-                                            <Text style={styles.socialIcon}></Text>
+                                            <Typography variant="h3" style={styles.socialIcon}></Typography>
                                         </TouchableOpacity>
                                     )}
                                 </View>
@@ -347,7 +331,7 @@ const LoginScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     inner: {
         flex: 1,
@@ -369,7 +353,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
     },
     backButtonText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 24,
         fontWeight: '300',
     },
@@ -383,13 +367,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 32,
         fontWeight: '500',
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         marginBottom: 12,
         lineHeight: 40,
     },
     subtitle: {
         fontSize: 16,
-        color: COLORS.textSecondary,
+        color: Theme.COLORS.textSecondary,
         fontWeight: '400',
     },
     form: {
@@ -410,7 +394,7 @@ const styles = StyleSheet.create({
     },
     customNumberInput: {
         flex: 1,
-        color: COLORS.primary, // Gold when typing, matches the design
+        color: Theme.COLORS.primary, // Gold when typing, matches the design
         fontSize: 34,
         fontWeight: '300',
         height: 70,
@@ -439,7 +423,7 @@ const styles = StyleSheet.create({
         marginLeft: -15, // Pull number even closer for tighter alignment
     },
     phoneCodeText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 34,
         fontWeight: '300',
         letterSpacing: -0.5, // Tighter for gold code text
@@ -450,7 +434,7 @@ const styles = StyleSheet.create({
         paddingLeft: 0,
     },
     dropdownArrow: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 28,
         marginLeft: 8, // Small gap between country code and chevron
         fontWeight: '300',
@@ -482,11 +466,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     otpBoxFocused: {
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         borderWidth: 2,
     },
     otpBoxText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 24,
         fontWeight: '600',
     },
@@ -500,11 +484,11 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     resendLink: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: '600',
     },
     resendCountdown: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
     },
     flexFiller: {
         flex: 1,
@@ -523,27 +507,27 @@ const styles = StyleSheet.create({
         height: 22,
         borderRadius: 4,
         borderWidth: 1,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         marginRight: 12,
         marginTop: 2,
         justifyContent: 'center',
         alignItems: 'center',
     },
     checkboxChecked: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: Theme.COLORS.primary,
     },
     checkmark: {
-        color: COLORS.background,
+        color: Theme.COLORS.background,
         fontSize: 14,
         fontWeight: '900',
     },
     termsText: {
-        color: COLORS.textSecondary,
+        color: Theme.COLORS.textSecondary,
         fontSize: 13,
         lineHeight: 18,
     },
     linkText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: '500',
     },
     primaryButton: {
@@ -556,10 +540,10 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(212, 186, 127, 0.3)',
     },
     buttonEnabled: {
-        backgroundColor: COLORS.primary, // Solid gold when enabled
-        borderColor: COLORS.primary,
+        backgroundColor: Theme.COLORS.primary, // Solid gold when enabled
+        borderColor: Theme.COLORS.primary,
         elevation: 4,
-        shadowColor: COLORS.primary,
+        shadowColor: Theme.COLORS.primary,
         shadowOffset: { width: 0, height: 4 },
         shadowOpacity: 0.3,
         shadowRadius: 8,
@@ -581,7 +565,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
     },
     buttonTextEnabled: {
-        color: COLORS.background, // Dark text on gold background
+        color: Theme.COLORS.background, // Dark text on gold background
     },
 
     socialWrapper: {
@@ -620,7 +604,7 @@ const styles = StyleSheet.create({
         borderColor: 'rgba(255,255,255,0.08)',
     },
     socialIcon: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 22,
         fontWeight: '500',
     },
@@ -628,7 +612,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 16,
         paddingTop: 20,
         paddingBottom: 12,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     searchBox: {
         flexDirection: 'row',
@@ -643,19 +627,19 @@ const styles = StyleSheet.create({
     searchIconText: {
         fontSize: 28,
         marginRight: 12,
-        color: COLORS.primary, // Gold search icon
+        color: Theme.COLORS.primary, // Gold search icon
         fontWeight: '400',
     },
     searchInput: {
         flex: 1,
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 17,
         height: '100%',
         padding: 0,
     },
     countryModalContainer: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     countryItem: {
         flexDirection: 'row',
@@ -673,13 +657,13 @@ const styles = StyleSheet.create({
         width: 44,
     },
     countryCallingCode: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 16,
         fontWeight: '400',
         width: 52,
     },
     countryName: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 16,
         fontWeight: '400',
         flex: 1,

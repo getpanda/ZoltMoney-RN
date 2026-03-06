@@ -1,14 +1,18 @@
-import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, StyleSheet } from 'react-native';
+import { useTranslation } from 'react-i18next';
+import Theme from '../theme/Theme';
+import { Typography } from '../components/common';
 
 const DetailsScreen = () => {
+    const { t } = useTranslation();
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>Product Details</Text>
-            <Text style={styles.content}>
-                This is a native screen with a real iOS navigation bar and back button.
-                Try swiping from the left edge to go back!
-            </Text>
+            <Typography style={styles.title}>{t('details.title')}</Typography>
+            <Typography style={styles.content}>
+                {t('details.content_line1')}
+                {'\n'}
+                {t('details.content_line2')}
+            </Typography>
         </View>
     );
 };
@@ -17,17 +21,17 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         padding: 20,
-        backgroundColor: '#FFFFFF',
+        backgroundColor: Theme.COLORS.background,
     },
     title: {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 15,
-        color: '#333',
+        color: Theme.COLORS.text,
     },
     content: {
         fontSize: 16,
-        color: '#444',
+        color: Theme.COLORS.textSecondary,
         lineHeight: 24,
     },
 });

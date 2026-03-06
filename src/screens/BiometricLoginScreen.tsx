@@ -10,13 +10,16 @@ import {
     Alert,
     StatusBar,
 } from 'react-native';
-import { COLORS } from '../theme/colors';
+import { useTranslation } from 'react-i18next';
+import Theme from '../theme/Theme';
+import { Typography, Button } from '../components/common';
 import { BiometricService } from '../services/BiometricService';
 import { StorageService } from '../services/StorageService';
 import { useNavigation } from '@react-navigation/native';
 import { markAuthenticated, loginInitBiometric, loginVerifyBiometric } from '../api/auth';
 
 const BiometricLoginScreen = () => {
+    const { t } = useTranslation();
     const navigation = useNavigation<any>();
     const [loading, setLoading] = useState(false);
     const [biometryType, setBiometryType] = useState<string | null>('Face ID');
@@ -46,12 +49,10 @@ const BiometricLoginScreen = () => {
 
                 if (signature) {
                     console.log('Custodial Biometric Re-auth Success');
-                    // Mark session as verified to prevent AppState listener loop
-                    await StorageService.setItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED, '1');
                     await markAuthenticated();
                     navigation.replace('Home');
                 } else {
-                    Alert.alert('Authentication Failed', 'Please try again.');
+                    Alert.alert(t('auth.biometric.auth_failed'), t('auth.biometric.auth_failed_msg'));
                 }
             } else {
                 // Self-custody users: DFNS Passkey login (challenge-response)
@@ -87,7 +88,7 @@ const BiometricLoginScreen = () => {
                     });
 
                     if (loginRes.access_token) {
-                        await StorageService.setItem(StorageService.KEYS.AUTH_TOKEN, loginRes.access_token);
+                        await StorageService.setSecureItem(StorageService.KEYS.AUTH_TOKEN, loginRes.access_token);
                         // Mark session as verified
                         await StorageService.setItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED, '1');
                         console.log('Passkey Login Success');
@@ -97,12 +98,12 @@ const BiometricLoginScreen = () => {
                     }
                 } catch (err: any) {
                     console.error('Passkey Login Error:', err);
-                    Alert.alert('Login Failed', err.message || 'Please use phone number instead.');
+                    Alert.alert(t('auth.biometric.login_failed_title'), err.message || t('auth.biometric.use_phone'));
                 }
             }
         } catch (error) {
             console.error('Biometric Login Error:', error);
-            Alert.alert('Error', 'An unexpected error occurred.');
+            Alert.alert(t('common.error'), t('common.error_description') || 'An unexpected error occurred.');
         } finally {
             setLoading(false);
         }
@@ -113,40 +114,34 @@ const BiometricLoginScreen = () => {
             <StatusBar barStyle="light-content" />
             <View style={styles.content}>
                 <View style={styles.header}>
-                    <Text style={styles.title}>Verify Your Identity</Text>
-                    <Text style={styles.subtitle}>
-                        Use {biometryType} or screen lock to authenticate and access your account.
-                    </Text>
+                    <Typography style={styles.title}>{t('auth.biometric.login_title')}</Typography>
+                    <Typography style={styles.subtitle}>
+                        {t('auth.biometric.login_subtitle', { type: biometryType })}
+                    </Typography>
                 </View>
 
                 <View style={styles.iconContainer}>
                     <View style={styles.iconCircle}>
                         {/* Placeholder for FaceID/TouchID icon */}
-                        <Text style={styles.iconText}>
+                        <Typography style={styles.iconText}>
                             {biometryType === 'Face ID' ? '👤' : '✋'}
-                        </Text>
+                        </Typography>
                     </View>
                 </View>
 
                 <View style={styles.footer}>
-                    <TouchableOpacity
-                        style={[styles.primaryButton, loading && styles.buttonDisabled]}
+                    <Button
+                        title={t('auth.biometric.login_button', { type: biometryType })}
                         onPress={handleAuthenticate}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color={COLORS.background} />
-                        ) : (
-                            <Text style={styles.buttonText}>Verify with {biometryType}</Text>
-                        )}
-                    </TouchableOpacity>
+                        loading={loading}
+                    />
 
                     <TouchableOpacity
                         style={styles.secondaryButton}
                         onPress={() => navigation.navigate('Login')}
                         disabled={loading}
                     >
-                        <Text style={styles.secondaryButtonText}>Use Phone Number instead</Text>
+                        <Typography style={styles.secondaryButtonText}>{t('auth.biometric.use_phone')}</Typography>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -157,7 +152,7 @@ const BiometricLoginScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     content: {
         flex: 1,
@@ -171,13 +166,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: '700',
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         marginBottom: 12,
         textAlign: 'center',
     },
     subtitle: {
         fontSize: 16,
-        color: COLORS.textSecondary,
+        color: Theme.COLORS.textSecondary,
         textAlign: 'center',
         lineHeight: 24,
     },
@@ -190,7 +185,7 @@ const styles = StyleSheet.create({
         height: 140,
         borderRadius: 70,
         borderWidth: 2,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         borderStyle: 'dashed',
         alignItems: 'center',
         justifyContent: 'center',
@@ -202,34 +197,14 @@ const styles = StyleSheet.create({
     footer: {
         width: '100%',
     },
-    primaryButton: {
-        backgroundColor: COLORS.primary,
-        height: 60,
-        borderRadius: 30,
-        justifyContent: 'center',
-        alignItems: 'center',
-        shadowColor: COLORS.primary,
-        shadowOffset: { width: 0, height: 4 },
-        shadowOpacity: 0.3,
-        shadowRadius: 5,
-        elevation: 8,
-        marginBottom: 20,
-    },
-    buttonDisabled: {
-        opacity: 0.6,
-    },
-    buttonText: {
-        color: COLORS.background,
-        fontSize: 18,
-        fontWeight: '700',
-    },
     secondaryButton: {
         height: 50,
         justifyContent: 'center',
         alignItems: 'center',
+        marginTop: 10,
     },
     secondaryButtonText: {
-        color: COLORS.textSecondary,
+        color: Theme.COLORS.textSecondary,
         fontSize: 14,
         fontWeight: '600',
     },

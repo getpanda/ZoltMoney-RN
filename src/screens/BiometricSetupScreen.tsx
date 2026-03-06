@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     TouchableOpacity,
     SafeAreaView,
     StatusBar,
     Alert,
 } from 'react-native';
-import { COLORS } from '../theme/colors';
+import { useTranslation } from 'react-i18next';
+import Theme from '../theme/Theme';
+import { Typography, Button } from '../components/common';
 import { BiometricService } from '../services/BiometricService';
 import { StorageService } from '../services/StorageService';
 
 const BiometricSetupScreen = ({ navigation }: any) => {
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
     const handleEnableBiometric = async () => {
@@ -20,7 +22,7 @@ const BiometricSetupScreen = ({ navigation }: any) => {
         try {
             const available = await BiometricService.isSensorAvailable();
             if (!available) {
-                Alert.alert('Not Supported', 'Biometric authentication is not available on this device.');
+                Alert.alert(t('auth.biometric.not_supported_title'), t('auth.biometric.not_supported'));
                 return;
             }
             // createKeys triggers the native Face ID / Touch ID prompt
@@ -31,10 +33,10 @@ const BiometricSetupScreen = ({ navigation }: any) => {
                 await StorageService.setItem(StorageService.KEYS.SESSION_BIOMETRIC_VERIFIED, '1');
                 navigation.replace('Home');
             } else {
-                Alert.alert('Setup Failed', 'Biometric setup was cancelled or failed. Please try again.');
+                Alert.alert(t('auth.biometric.setup_failed_title'), t('auth.biometric.setup_failed'));
             }
         } catch (error: any) {
-            Alert.alert('Error', error?.message || 'Failed to enable biometrics.');
+            Alert.alert(t('common.error'), error?.message || t('auth.biometric.setup_error') || 'Failed to enable biometrics.');
         } finally {
             setLoading(false);
         }
@@ -47,21 +49,21 @@ const BiometricSetupScreen = ({ navigation }: any) => {
                 {/* Top row - support icon */}
                 <View style={styles.topRow}>
                     <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                        <Text style={styles.backButtonText}>←</Text>
+                        <Typography style={styles.backButtonText}>←</Typography>
                     </TouchableOpacity>
                     <View style={styles.topRightIcons}>
                         <TouchableOpacity style={styles.supportIcon}>
-                            <Text style={styles.supportEmoji}>🎧</Text>
+                            <Typography style={styles.supportEmoji}>🎧</Typography>
                         </TouchableOpacity>
                     </View>
                 </View>
 
                 {/* Title & subtitle */}
                 <View style={styles.header}>
-                    <Text style={styles.title}>Secure your Account</Text>
-                    <Text style={styles.subtitle}>
-                        Enable biometric authentication for quick and secure access to your account.
-                    </Text>
+                    <Typography style={styles.title}>{t('auth.biometric.setup_title')}</Typography>
+                    <Typography style={styles.subtitle}>
+                        {t('auth.biometric.setup_subtitle')}
+                    </Typography>
                 </View>
 
                 {/* Center illustration */}
@@ -92,12 +94,11 @@ const BiometricSetupScreen = ({ navigation }: any) => {
 
                 {/* Enable Biometric button */}
                 <View style={styles.bottomSection}>
-                    <TouchableOpacity
-                        style={styles.primaryButton}
+                    <Button
+                        title={t('auth.biometric.enable')}
                         onPress={handleEnableBiometric}
-                    >
-                        <Text style={styles.buttonText}>Enable Biometric</Text>
-                    </TouchableOpacity>
+                        loading={loading}
+                    />
                 </View>
             </View>
         </SafeAreaView>
@@ -107,7 +108,7 @@ const BiometricSetupScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     inner: {
         flex: 1,
@@ -124,7 +125,7 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     backButtonText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 26,
     },
     topRightIcons: {
@@ -135,7 +136,7 @@ const styles = StyleSheet.create({
         height: 42,
         borderRadius: 21,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -146,14 +147,14 @@ const styles = StyleSheet.create({
         marginBottom: 8,
     },
     title: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 30,
         fontWeight: '700',
         lineHeight: 38,
         marginBottom: 12,
     },
     subtitle: {
-        color: 'rgba(255,255,255,0.55)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 15,
         lineHeight: 22,
     },
@@ -182,7 +183,7 @@ const styles = StyleSheet.create({
         width: 52,
         height: 72,
         borderWidth: 2.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         borderRadius: 8,
         justifyContent: 'center',
         alignItems: 'center',
@@ -192,7 +193,7 @@ const styles = StyleSheet.create({
         width: 36,
         height: 28,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         borderRadius: 3,
         justifyContent: 'center',
         alignItems: 'center',
@@ -206,7 +207,7 @@ const styles = StyleSheet.create({
         width: 6,
         height: 6,
         borderRadius: 3,
-        backgroundColor: COLORS.primary,
+        backgroundColor: Theme.COLORS.primary,
     },
     // Key shape
     keySvg: {
@@ -218,18 +219,18 @@ const styles = StyleSheet.create({
         height: 22,
         borderRadius: 11,
         borderWidth: 2.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         marginBottom: -2,
     },
     keyShaft: {
         width: 2.5,
         height: 30,
-        backgroundColor: COLORS.primary,
+        backgroundColor: Theme.COLORS.primary,
     },
     keyTooth: {
         width: 8,
         height: 2.5,
-        backgroundColor: COLORS.primary,
+        backgroundColor: Theme.COLORS.primary,
         alignSelf: 'flex-end',
         marginTop: -8,
     },
@@ -238,18 +239,6 @@ const styles = StyleSheet.create({
     },
     bottomSection: {
         marginBottom: 24,
-    },
-    primaryButton: {
-        backgroundColor: COLORS.primary,
-        borderRadius: 50,
-        height: 56,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: COLORS.background,
     },
 });
 

@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     TouchableOpacity,
     SafeAreaView,
@@ -11,20 +10,17 @@ import {
     Keyboard,
     StatusBar,
     TextInput,
-    ActivityIndicator,
     Alert,
 } from 'react-native';
+import { useTranslation } from 'react-i18next';
 import { loginInit, loginVerify } from '../api/auth';
 import { StorageService } from '../services/StorageService';
-import { COLORS } from '../theme/colors';
-
-const getApiErrorMessage = (error: any, fallback: string): string => {
-    const data = error?.response?.data;
-    if (!data) return fallback;
-    return data.message || data.error || fallback;
-};
+import Theme from '../theme/Theme';
+import Typography from '../components/common/Typography';
+import Button from '../components/common/Button';
 
 const OtpScreen = ({ navigation, route }: any) => {
+    const { t } = useTranslation();
     const { formattedValue, selectedCountry } = route.params as {
         formattedValue: string;
         selectedCountry: { name: string; code: string; callingCode: string; flag: string };
@@ -71,7 +67,12 @@ const OtpScreen = ({ navigation, route }: any) => {
             startResendTimer();
             setTimeout(() => otpInputRef.current?.focus(), 300);
         } catch (error: any) {
-            Alert.alert('Error', getApiErrorMessage(error, 'Failed to resend OTP. Please try again.'));
+            const getApiErrorMessage = (err: any, fb: string): string => {
+                const data = err?.response?.data;
+                if (!data) return fb;
+                return data.message || data.error || fb;
+            };
+            Alert.alert(t('common.error'), getApiErrorMessage(error, t('auth.otp.resend_error')));
         } finally {
             setLoading(false);
         }
@@ -92,7 +93,7 @@ const OtpScreen = ({ navigation, route }: any) => {
 
             if (data.token || data.access_token) {
                 const token = data.token || data.access_token;
-                await StorageService.setItem(StorageService.KEYS.AUTH_TOKEN, token);
+                await StorageService.setSecureItem(StorageService.KEYS.AUTH_TOKEN, token);
             }
             await StorageService.setItem(StorageService.KEYS.PHONE_NUMBER, formattedValue);
 
@@ -114,7 +115,12 @@ const OtpScreen = ({ navigation, route }: any) => {
                 navigation.navigate('EmailVerify');
             }
         } catch (error: any) {
-            Alert.alert('Error', getApiErrorMessage(error, 'Invalid OTP. Please try again.'));
+            const getApiErrorMessage = (err: any, fb: string): string => {
+                const data = err?.response?.data;
+                if (!data) return fb;
+                return data.message || data.error || fb;
+            };
+            Alert.alert(t('common.error'), getApiErrorMessage(error, t('auth.otp.verify_error')));
         } finally {
             setLoading(false);
         }
@@ -137,16 +143,16 @@ const OtpScreen = ({ navigation, route }: any) => {
                                 onPress={() => navigation.goBack()}
                                 style={styles.backButton}
                             >
-                                <Text style={styles.backButtonText}>←</Text>
+                                <Typography variant="h3" style={styles.backButtonText}>←</Typography>
                             </TouchableOpacity>
                             <TouchableOpacity style={styles.supportIcon}>
-                                <Text style={{ fontSize: 24 }}>🎧</Text>
+                                <Typography style={{ fontSize: 24 }}>🎧</Typography>
                             </TouchableOpacity>
                         </View>
 
-                        <Text style={styles.title}>Enter verification code</Text>
-                        <Text style={styles.subtitle}>We sent a 6-digit code to your number:</Text>
-                        <Text style={styles.phoneDisplay}>{formattedValue}</Text>
+                        <Typography variant="h1" style={styles.title}>{t('auth.otp.title')}</Typography>
+                        <Typography variant="bodySecondary" style={styles.subtitle}>{t('auth.otp.subtitle')}</Typography>
+                        <Typography variant="body" style={styles.phoneDisplay}>{formattedValue}</Typography>
                     </View>
 
                     {/* OTP Input */}
@@ -186,7 +192,7 @@ const OtpScreen = ({ navigation, route }: any) => {
                                             otp.length === i && styles.otpBoxFocused,
                                         ]}
                                     >
-                                        <Text style={styles.otpBoxText}>{digit}</Text>
+                                        <Typography style={styles.otpBoxText}>{digit}</Typography>
                                     </View>
                                 ))}
                             </View>
@@ -196,18 +202,19 @@ const OtpScreen = ({ navigation, route }: any) => {
                         <View style={styles.resendRow}>
                             {canResend ? (
                                 <TouchableOpacity onPress={handleResend} disabled={loading}>
-                                    <Text style={styles.resendText}>
-                                        Didn't receive a code?{' '}
-                                        <Text style={styles.resendLink}>Resend</Text>
-                                    </Text>
+                                    <Typography style={styles.resendText}>
+                                        {t('auth.otp.resend_prefix')}
+                                        <Typography style={styles.resendLink}>{t('auth.otp.resend_link')}</Typography>
+                                    </Typography>
                                 </TouchableOpacity>
                             ) : (
-                                <Text style={styles.resendText}>
-                                    Didn't receive a code? Resend in{' '}
-                                    <Text style={styles.resendCountdown}>
+                                <Typography style={styles.resendText}>
+                                    {t('auth.otp.resend_prefix')}
+                                    {t('auth.otp.resend_wait')}
+                                    <Typography style={styles.resendCountdown}>
                                         {String(Math.floor(resendTimer / 60)).padStart(2, '0')}:{String(resendTimer % 60).padStart(2, '0')}
-                                    </Text>
-                                </Text>
+                                    </Typography>
+                                </Typography>
                             )}
                         </View>
                     </View>
@@ -216,27 +223,12 @@ const OtpScreen = ({ navigation, route }: any) => {
 
                     {/* Continue Button */}
                     <View style={styles.bottomSection}>
-                        <TouchableOpacity
-                            style={[
-                                styles.primaryButton,
-                                isButtonEnabled ? styles.buttonEnabled : styles.buttonDisabled,
-                            ]}
-                            onPress={handleVerifyOtp}
+                        <Button
+                            title={t('common.continue')}
+                            loading={loading}
                             disabled={!isButtonEnabled}
-                        >
-                            <View style={styles.buttonInner}>
-                                {loading ? (
-                                    <ActivityIndicator color={COLORS.background} />
-                                ) : (
-                                    <Text style={[
-                                        styles.buttonText,
-                                        isButtonEnabled && styles.buttonTextEnabled,
-                                    ]}>
-                                        Continue
-                                    </Text>
-                                )}
-                            </View>
-                        </TouchableOpacity>
+                            onPress={handleVerifyOtp}
+                        />
                     </View>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
@@ -247,7 +239,7 @@ const OtpScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     inner: {
         flex: 1,
@@ -267,7 +259,7 @@ const styles = StyleSheet.create({
         padding: 8,
     },
     backButtonText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 24,
     },
     supportIcon: {
@@ -275,23 +267,23 @@ const styles = StyleSheet.create({
         height: 42,
         borderRadius: 21,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
     title: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 28,
         fontWeight: '700',
         marginBottom: 10,
     },
     subtitle: {
-        color: 'rgba(255,255,255,0.6)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 15,
         marginBottom: 4,
     },
     phoneDisplay: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 15,
         fontWeight: '500',
         marginBottom: 8,
@@ -321,11 +313,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     otpBoxFocused: {
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         borderWidth: 2,
     },
     otpBoxText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 24,
         fontWeight: '600',
     },
@@ -334,47 +326,22 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     resendText: {
-        color: 'rgba(255, 255, 255, 0.55)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 14,
         textAlign: 'center',
     },
     resendLink: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: '600',
     },
     resendCountdown: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
     },
     flexFiller: {
         flex: 1,
     },
     bottomSection: {
         marginBottom: 20,
-    },
-    primaryButton: {
-        borderRadius: 50,
-        overflow: 'hidden',
-        height: 56,
-        justifyContent: 'center',
-    },
-    buttonEnabled: {
-        backgroundColor: COLORS.primary,
-    },
-    buttonDisabled: {
-        backgroundColor: 'rgba(212, 186, 127, 0.25)',
-    },
-    buttonInner: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: 'rgba(255,255,255,0.4)',
-    },
-    buttonTextEnabled: {
-        color: COLORS.background,
     },
 });
 

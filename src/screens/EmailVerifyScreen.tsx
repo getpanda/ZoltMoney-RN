@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     TouchableOpacity,
     SafeAreaView,
@@ -11,10 +10,11 @@ import {
     Keyboard,
     StatusBar,
     TextInput,
-    ActivityIndicator,
     Alert,
 } from 'react-native';
-import { COLORS } from '../theme/colors';
+import { useTranslation } from 'react-i18next';
+import Theme from '../theme/Theme';
+import { Typography, Button } from '../components/common';
 import { emailOtpInit } from '../api/auth';
 import { StorageService } from '../services/StorageService';
 
@@ -25,6 +25,7 @@ const getApiErrorMessage = (error: any, fallback: string): string => {
 };
 
 const EmailVerifyScreen = ({ navigation }: any) => {
+    const { t } = useTranslation();
     const [email, setEmail] = useState('');
     const [loading, setLoading] = useState(false);
     const emailInputRef = useRef<TextInput>(null);
@@ -41,12 +42,12 @@ const EmailVerifyScreen = ({ navigation }: any) => {
 
     const handleLogout = async () => {
         Alert.alert(
-            'Logout',
-            'Are you sure you want to logout? This will reset your onboarding progress.',
+            t('auth.email_verify.logout_confirm.title'),
+            t('auth.email_verify.logout_confirm.message'),
             [
-                { text: 'Cancel', style: 'cancel' },
+                { text: t('auth.email_verify.logout_confirm.cancel'), style: 'cancel' },
                 {
-                    text: 'Logout',
+                    text: t('auth.email_verify.logout_confirm.confirm'),
                     style: 'destructive',
                     onPress: async () => {
                         await StorageService.logout();
@@ -66,7 +67,7 @@ const EmailVerifyScreen = ({ navigation }: any) => {
             await emailOtpInit(email.trim());
             navigation.navigate('EmailOtpVerify', { email: email.trim() });
         } catch (error: any) {
-            Alert.alert('Error', getApiErrorMessage(error, 'Failed to send OTP. Please try again.'));
+            Alert.alert(t('common.error'), getApiErrorMessage(error, t('auth.email_verify.send_error') || 'Failed to send OTP. Please try again.'));
         } finally {
             setLoading(false);
         }
@@ -83,21 +84,21 @@ const EmailVerifyScreen = ({ navigation }: any) => {
                     {/* Header icons */}
                     <View style={styles.topRow}>
                         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                            <Text style={styles.logoutText}>Logout</Text>
+                            <Typography style={styles.logoutText}>{t('auth.email_verify.logout_confirm.confirm')}</Typography>
                         </TouchableOpacity>
                         <View style={styles.topRightIcons}>
                             <TouchableOpacity style={styles.iconButton}>
-                                <Text style={styles.iconText}>◎</Text>
+                                <Typography style={styles.iconText}>◎</Typography>
                             </TouchableOpacity>
                         </View>
                     </View>
 
                     {/* Title */}
                     <View style={styles.header}>
-                        <Text style={styles.title}>Verify Your Email Address</Text>
-                        <Text style={styles.subtitle}>
-                            Enter your email address below and we'll send you a 6-digit verification code to confirm it
-                        </Text>
+                        <Typography style={styles.title}>{t('auth.email_verify.title')}</Typography>
+                        <Typography style={styles.subtitle}>
+                            {t('auth.email_verify.subtitle')}
+                        </Typography>
                     </View>
 
                     {/* Email Input */}
@@ -105,14 +106,14 @@ const EmailVerifyScreen = ({ navigation }: any) => {
                         <TextInput
                             ref={emailInputRef}
                             style={styles.input}
-                            placeholder="Email"
+                            placeholder={t('auth.email_verify.placeholder')}
                             placeholderTextColor="rgba(255,255,255,0.35)"
                             keyboardType="email-address"
                             autoCapitalize="none"
                             autoCorrect={false}
                             value={email}
                             onChangeText={setEmail}
-                            selectionColor={COLORS.primary}
+                            selectionColor={Theme.COLORS.primary}
                         />
                     </View>
 
@@ -120,27 +121,12 @@ const EmailVerifyScreen = ({ navigation }: any) => {
 
                     {/* Send OTP Button */}
                     <View style={styles.bottomSection}>
-                        <TouchableOpacity
-                            style={[
-                                styles.primaryButton,
-                                isEmailValid && !loading ? styles.buttonEnabled : styles.buttonDisabled,
-                            ]}
+                        <Button
+                            title={t('auth.email_verify.send_button')}
                             onPress={handleSendOtp}
+                            loading={loading}
                             disabled={!isEmailValid || loading}
-                        >
-                            <View style={styles.buttonInner}>
-                                {loading ? (
-                                    <ActivityIndicator color={COLORS.background} />
-                                ) : (
-                                    <Text style={[
-                                        styles.buttonText,
-                                        isEmailValid && styles.buttonTextEnabled,
-                                    ]}>
-                                        Send OTP
-                                    </Text>
-                                )}
-                            </View>
-                        </TouchableOpacity>
+                        />
                     </View>
                 </KeyboardAvoidingView>
             </TouchableWithoutFeedback>
@@ -151,7 +137,7 @@ const EmailVerifyScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     inner: {
         flex: 1,
@@ -169,16 +155,9 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     logoutText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 15,
         fontWeight: '600',
-    },
-    backButton: {
-        padding: 4,
-    },
-    backButtonText: {
-        color: COLORS.white,
-        fontSize: 26,
     },
     topRightIcons: {
         flexDirection: 'row',
@@ -189,12 +168,12 @@ const styles = StyleSheet.create({
         height: 40,
         borderRadius: 20,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
     iconText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 18,
         fontWeight: '400',
     },
@@ -202,14 +181,14 @@ const styles = StyleSheet.create({
         marginBottom: 32,
     },
     title: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 28,
         fontWeight: '700',
         lineHeight: 36,
         marginBottom: 12,
     },
     subtitle: {
-        color: 'rgba(255,255,255,0.55)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 15,
         lineHeight: 22,
     },
@@ -222,7 +201,7 @@ const styles = StyleSheet.create({
         paddingVertical: 4,
     },
     input: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 16,
         height: 52,
     },
@@ -231,30 +210,6 @@ const styles = StyleSheet.create({
     },
     bottomSection: {
         marginBottom: 24,
-    },
-    primaryButton: {
-        borderRadius: 50,
-        height: 56,
-        justifyContent: 'center',
-    },
-    buttonEnabled: {
-        backgroundColor: COLORS.primary,
-    },
-    buttonDisabled: {
-        backgroundColor: 'rgba(212, 186, 127, 0.25)',
-    },
-    buttonInner: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: 'rgba(255,255,255,0.4)',
-    },
-    buttonTextEnabled: {
-        color: COLORS.background,
     },
 });
 

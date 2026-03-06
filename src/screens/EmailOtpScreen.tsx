@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     TouchableOpacity,
     SafeAreaView,
@@ -11,10 +10,11 @@ import {
     Keyboard,
     StatusBar,
     TextInput,
-    ActivityIndicator,
     Alert,
 } from 'react-native';
-import { COLORS } from '../theme/colors';
+import { useTranslation } from 'react-i18next';
+import Theme from '../theme/Theme';
+import { Typography, Button } from '../components/common';
 import { emailOtpInit, emailOtpVerify } from '../api/auth';
 import { StorageService } from '../services/StorageService';
 
@@ -43,6 +43,7 @@ const maskEmail = (email: string): string => {
 };
 
 const EmailOtpScreen = ({ navigation, route }: any) => {
+    const { t } = useTranslation();
     const { email } = route.params as { email: string };
 
     const [otp, setOtp] = useState('');
@@ -78,12 +79,12 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
 
     const handleLogout = async () => {
         Alert.alert(
-            'Logout',
-            'Are you sure you want to logout? This will reset your onboarding progress.',
+            t('auth.email_otp.logout_confirm.title') || t('auth.email_verify.logout_confirm.title'),
+            t('auth.email_otp.logout_confirm.message') || t('auth.email_verify.logout_confirm.message'),
             [
-                { text: 'Cancel', style: 'cancel' },
+                { text: t('common.cancel'), style: 'cancel' },
                 {
-                    text: 'Logout',
+                    text: t('auth.email_otp.logout_confirm.confirm') || t('auth.email_verify.logout_confirm.confirm'),
                     style: 'destructive',
                     onPress: async () => {
                         await StorageService.logout();
@@ -120,10 +121,10 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
             if (result?.result === 'success' || result?.success) {
                 navigation.navigate('BiometricSetup');
             } else {
-                Alert.alert('Error', result?.error || 'Invalid OTP. Please try again.');
+                Alert.alert(t('common.error'), result?.error || t('auth.email_otp.verify_error'));
             }
         } catch (error: any) {
-            Alert.alert('Error', getApiErrorMessage(error, 'Invalid OTP. Please try again.'));
+            Alert.alert(t('common.error'), getApiErrorMessage(error, t('auth.email_otp.verify_error')));
         } finally {
             setLoading(false);
         }
@@ -142,24 +143,24 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
                     {/* Top row: back + logout + support */}
                     <View style={styles.topRow}>
                         <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                            <Text style={styles.backText}>←</Text>
+                            <Typography style={styles.backText}>←</Typography>
                         </TouchableOpacity>
                         <TouchableOpacity onPress={handleLogout} style={styles.logoutButton}>
-                            <Text style={styles.logoutText}>Logout</Text>
+                            <Typography style={styles.logoutText}>{t('auth.email_otp.logout_confirm.confirm') || t('auth.email_verify.logout_confirm.confirm')}</Typography>
                         </TouchableOpacity>
                         <TouchableOpacity style={styles.supportIcon}>
-                            <Text style={styles.supportEmoji}>🎧</Text>
+                            <Typography style={styles.supportEmoji}>🎧</Typography>
                         </TouchableOpacity>
                     </View>
 
                     {/* Title */}
-                    <Text style={styles.title}>Enter the verification code</Text>
+                    <Typography style={styles.title}>{t('auth.email_otp.title')}</Typography>
 
                     {/* Subtitle + masked email */}
-                    <Text style={styles.subtitle}>
-                        We sent a 6 digit code to your email address:
-                    </Text>
-                    <Text style={styles.maskedEmail}>{maskEmail(email)}</Text>
+                    <Typography style={styles.subtitle}>
+                        {t('auth.email_otp.subtitle')}
+                    </Typography>
+                    <Typography style={styles.maskedEmail}>{maskEmail(email)}</Typography>
 
                     {/* OTP Boxes */}
                     <TouchableWithoutFeedback onPress={() => otpInputRef.current?.focus()}>
@@ -172,7 +173,7 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
                                         otp.length === i && styles.otpBoxFocused,
                                     ]}
                                 >
-                                    <Text style={styles.otpBoxText}>{digit}</Text>
+                                    <Typography style={styles.otpBoxText}>{digit}</Typography>
                                 </View>
                             ))}
                         </View>
@@ -206,18 +207,18 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
                     <View style={styles.resendRow}>
                         {canResend ? (
                             <TouchableOpacity onPress={handleResend} disabled={loading}>
-                                <Text style={styles.resendText}>
-                                    Didn't receive a code?{' '}
-                                    <Text style={styles.resendLink}>Resend</Text>
-                                </Text>
+                                <Typography style={styles.resendText}>
+                                    {t('auth.email_otp.resend_prefix')}
+                                    <Typography style={styles.resendLink}>{t('auth.email_otp.resend_link')}</Typography>
+                                </Typography>
                             </TouchableOpacity>
                         ) : (
-                            <Text style={styles.resendText}>
-                                Didn't receive a code? Resend in{' '}
-                                <Text style={styles.resendCountdown}>
+                            <Typography style={styles.resendText}>
+                                {t('auth.email_otp.resend_prefix')} {t('auth.email_otp.resend_wait')}
+                                <Typography style={styles.resendCountdown}>
                                     {String(Math.floor(resendTimer / 60)).padStart(2, '0')}:{String(resendTimer % 60).padStart(2, '0')}
-                                </Text>
-                            </Text>
+                                </Typography>
+                            </Typography>
                         )}
                     </View>
 
@@ -226,19 +227,12 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
                     {/* Continue button - appears at bottom when 6 digits entered */}
                     {isButtonEnabled && (
                         <View style={styles.bottomSection}>
-                            <TouchableOpacity
-                                style={styles.primaryButton}
+                            <Button
+                                title={t('auth.email_otp.continue')}
                                 onPress={handleVerifyOtp}
+                                loading={loading}
                                 disabled={!isButtonEnabled}
-                            >
-                                <View style={styles.buttonInner}>
-                                    {loading ? (
-                                        <ActivityIndicator color={COLORS.background} />
-                                    ) : (
-                                        <Text style={styles.buttonText}>Continue</Text>
-                                    )}
-                                </View>
-                            </TouchableOpacity>
+                            />
                         </View>
                     )}
                 </KeyboardAvoidingView>
@@ -250,7 +244,7 @@ const EmailOtpScreen = ({ navigation, route }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     inner: {
         flex: 1,
@@ -268,7 +262,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 12,
     },
     logoutText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontSize: 15,
         fontWeight: '600',
     },
@@ -276,7 +270,7 @@ const styles = StyleSheet.create({
         padding: 4,
     },
     backText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 26,
     },
     supportIcon: {
@@ -284,7 +278,7 @@ const styles = StyleSheet.create({
         height: 42,
         borderRadius: 21,
         borderWidth: 1.5,
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         justifyContent: 'center',
         alignItems: 'center',
     },
@@ -292,20 +286,20 @@ const styles = StyleSheet.create({
         fontSize: 22,
     },
     title: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 30,
         fontWeight: '700',
         lineHeight: 38,
         marginBottom: 14,
     },
     subtitle: {
-        color: 'rgba(255,255,255,0.6)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 15,
         lineHeight: 22,
         marginBottom: 4,
     },
     maskedEmail: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 15,
         fontWeight: '700',
         letterSpacing: 0.3,
@@ -327,12 +321,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     otpBoxFocused: {
-        borderColor: COLORS.primary,
+        borderColor: Theme.COLORS.primary,
         borderWidth: 2,
         backgroundColor: 'rgba(212, 186, 127, 0.06)',
     },
     otpBoxText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 24,
         fontWeight: '600',
     },
@@ -347,16 +341,16 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     resendText: {
-        color: 'rgba(255, 255, 255, 0.55)',
+        color: Theme.COLORS.textSecondary,
         fontSize: 14,
         textAlign: 'center',
     },
     resendLink: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: '600',
     },
     resendCountdown: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: '600',
     },
     flexFiller: {
@@ -364,22 +358,6 @@ const styles = StyleSheet.create({
     },
     bottomSection: {
         marginBottom: 24,
-    },
-    primaryButton: {
-        borderRadius: 50,
-        height: 56,
-        justifyContent: 'center',
-        backgroundColor: COLORS.primary,
-    },
-    buttonInner: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    buttonText: {
-        fontSize: 17,
-        fontWeight: '600',
-        color: COLORS.background,
     },
 });
 

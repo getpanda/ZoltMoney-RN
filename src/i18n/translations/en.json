@@ -1,0 +1,124 @@
+{
+    "common": {
+        "loading": "Loading...",
+        "error": "Something went wrong",
+        "retry": "Retry",
+        "continue": "Continue",
+        "back": "Back",
+        "logout": "Logout",
+        "verify": "Verify"
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome Back",
+            "subtitle": "Sign in to continue to ZoltMoney",
+            "phone_placeholder": "Phone Number",
+            "send_otp": "Send OTP",
+            "apple_login": "Sign in with Apple",
+            "google_login": "Sign in with Google"
+        },
+        "otp": {
+            "title": "Enter verification code",
+            "subtitle": "We sent a 6-digit code to your number:",
+            "resend_prefix": "Didn't receive a code? ",
+            "resend_link": "Resend",
+            "resend_wait": "Resend in ",
+            "verify_error": "Invalid OTP. Please try again.",
+            "resend_error": "Failed to resend OTP. Please try again."
+        },
+        "biometric": {
+            "setup_title": "Secure your Account",
+            "setup_subtitle": "Enable biometric authentication for quick and secure access to your account.",
+            "enable": "Enable Biometric",
+            "not_supported": "Biometric authentication is not available on this device.",
+            "not_supported_title": "Not Supported",
+            "setup_failed": "Biometric setup was cancelled or failed. Please try again.",
+            "setup_failed_title": "Setup Failed",
+            "login_title": "Verify Your Identity",
+            "login_subtitle": "Use {{type}} or screen lock to authenticate and access your account.",
+            "login_button": "Verify with {{type}}",
+            "use_phone": "Use Phone Number instead",
+            "auth_failed": "Authentication Failed",
+            "auth_failed_msg": "Please try again.",
+            "sign_error": "Failed to sign biometric challenge.",
+            "login_failed_title": "Login Failed"
+        },
+        "email_verify": {
+            "title": "Verify Your Email Address",
+            "subtitle": "Enter your email address below and we'll send you a 6-digit verification code to confirm it",
+            "placeholder": "Email",
+            "send_button": "Send OTP",
+            "logout_confirm": {
+                "title": "Logout",
+                "message": "Are you sure you want to logout? This will reset your onboarding progress.",
+                "cancel": "Cancel",
+                "confirm": "Logout"
+            }
+        },
+        "email_otp": {
+            "title": "Enter the verification code",
+            "subtitle": "We sent a 6 digit code to your email address:",
+            "resend_prefix": "Didn't receive a code? ",
+            "resend_link": "Resend",
+            "resend_wait": "Resend in ",
+            "continue": "Continue",
+            "verify_error": "Invalid OTP. Please try again.",
+            "resend_error": "Failed to resend OTP. Please try again."
+        }
+    },
+    "home": {
+        "greeting": "Hello, {{name}}!",
+        "balance_label": "Your Balance - {{currency}}",
+        "send_money": "Send Money",
+        "earn_pill": "Earn €10",
+        "quick_actions": {
+            "add_money": "Add\nMoney",
+            "manage_beneficiary": "Manage\nBeneficiary",
+            "send_to_contacts": "Send to\nContacts",
+            "under_maintenance": "Under\nMaintenance",
+            "coming_soon": "Coming\nSoon"
+        },
+        "promo": {
+            "title": "Unlock Your €10 Signup Bonus!!",
+            "subtitle": "Send total of {{amount}}+ and we'll drop €10\nOffer valid once per user.",
+            "button": "Send Now"
+        },
+        "rates": {
+            "title": "Our Rates",
+            "sending_label": "You are sending",
+            "recipient_label": "Recipient gets",
+            "success_msg": "Woo hoo! you get {{amount}}"
+        },
+        "tabs": {
+            "home": "Home",
+            "history": "History"
+        },
+        "logout_confirm": {
+            "title": "Logout",
+            "message": "Are you sure you want to logout?",
+            "cancel": "Cancel",
+            "confirm": "Logout"
+        }
+    },
+    "landing": {
+        "title_part1": "Zolt",
+        "title_part2": "Money",
+        "headline": "The Future of\nSmart Finance",
+        "description": "Manage your wealth with precision and ease. Experience the power of\npure native performance.",
+        "get_started": "Get Started"
+    },
+    "support": {
+        "title": "Zolt Support",
+        "online": "Online",
+        "input_placeholder": "Type a message...",
+        "send": "Send",
+        "typing": "Support is typing...",
+        "initial_msg": "Hello! Welcome to Zolt Support. How can we help you today?",
+        "auto_reply": "Thanks for reaching out! Our team is reviewing your account. We'll get back to you in a few minutes."
+    },
+    "details": {
+        "title": "Product Details",
+        "content_line1": "This is a native screen with a real iOS navigation bar and back button.",
+        "content_line2": "Try swiping from the left edge to go back!"
+    }
+}

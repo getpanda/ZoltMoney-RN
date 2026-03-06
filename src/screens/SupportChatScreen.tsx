@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import {
     View,
-    Text,
     StyleSheet,
     TextInput,
     TouchableOpacity,
@@ -12,7 +11,9 @@ import {
     Keyboard,
     ActivityIndicator,
 } from 'react-native';
-import { COLORS } from '../theme/colors';
+import { useTranslation } from 'react-i18next';
+import Theme from '../theme/Theme';
+import { Typography } from '../components/common';
 
 interface Message {
     id: string;
@@ -22,10 +23,11 @@ interface Message {
 }
 
 const SupportChatScreen = ({ navigation }: any) => {
+    const { t } = useTranslation();
     const [messages, setMessages] = useState<Message[]>([
         {
             id: '1',
-            text: 'Hello! Welcome to Zolt Support. How can we help you today?',
+            text: t('support.initial_msg'),
             sender: 'support',
             timestamp: new Date(),
         },
@@ -53,7 +55,7 @@ const SupportChatScreen = ({ navigation }: any) => {
         setTimeout(() => {
             const supportResponse: Message = {
                 id: (Date.now() + 1).toString(),
-                text: "Thanks for reaching out! Our team is reviewing your account. We'll get back to you in a few minutes.",
+                text: t('support.auto_reply'),
                 sender: 'support',
                 timestamp: new Date(),
             };
@@ -75,13 +77,13 @@ const SupportChatScreen = ({ navigation }: any) => {
         return (
             <View style={[styles.messageContainer, isUser ? styles.userMessage : styles.supportMessage]}>
                 <View style={[styles.bubble, isUser ? styles.userBubble : styles.supportBubble]}>
-                    <Text style={[styles.messageText, isUser ? styles.userText : styles.supportText]}>
+                    <Typography style={[styles.messageText, isUser ? styles.userText : styles.supportText]}>
                         {item.text}
-                    </Text>
+                    </Typography>
                 </View>
-                <Text style={styles.timestamp}>
+                <Typography style={styles.timestamp}>
                     {item.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </Text>
+                </Typography>
             </View>
         );
     };
@@ -90,16 +92,16 @@ const SupportChatScreen = ({ navigation }: any) => {
         <SafeAreaView style={styles.container}>
             <View style={styles.header}>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
-                    <Text style={styles.backButtonText}>←</Text>
+                    <Typography style={styles.backButtonText}>←</Typography>
                 </TouchableOpacity>
                 <View style={styles.headerContent}>
-                    <Text style={styles.headerTitle}>Zolt Support</Text>
+                    <Typography style={styles.headerTitle}>{t('support.title')}</Typography>
                     <View style={styles.statusContainer}>
                         <View style={styles.statusDot} />
-                        <Text style={styles.statusText}>Online</Text>
+                        <Typography style={styles.statusText}>{t('support.online')}</Typography>
                     </View>
                 </View>
-                <View style={{ width: 40 }} />
+                <View style={styles.headerSpacer} />
             </View>
 
             <FlatList
@@ -112,8 +114,8 @@ const SupportChatScreen = ({ navigation }: any) => {
                 ListFooterComponent={
                     isTyping ? (
                         <View style={styles.typingContainer}>
-                            <ActivityIndicator size="small" color={COLORS.primary} />
-                            <Text style={styles.typingText}>Support is typing...</Text>
+                            <ActivityIndicator size="small" color={Theme.COLORS.primary} />
+                            <Typography style={styles.typingText}>{t('support.typing')}</Typography>
                         </View>
                     ) : null
                 }
@@ -126,14 +128,14 @@ const SupportChatScreen = ({ navigation }: any) => {
                 <View style={styles.inputContainer}>
                     <TextInput
                         style={styles.input}
-                        placeholder="Type a message..."
+                        placeholder={t('support.input_placeholder')}
                         placeholderTextColor="rgba(255,255,255,0.4)"
                         value={inputText}
                         onChangeText={setInputText}
                         multiline
                     />
                     <TouchableOpacity style={styles.sendButton} onPress={handleSend}>
-                        <Text style={styles.sendButtonText}>Send</Text>
+                        <Typography style={styles.sendButtonText}>{t('support.send')}</Typography>
                     </TouchableOpacity>
                 </View>
             </KeyboardAvoidingView>
@@ -144,7 +146,7 @@ const SupportChatScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: COLORS.background,
+        backgroundColor: Theme.COLORS.background,
     },
     header: {
         flexDirection: 'row',
@@ -152,14 +154,14 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
         paddingVertical: 10,
         borderBottomWidth: 1,
-        borderBottomColor: COLORS.border,
+        borderBottomColor: Theme.COLORS.border,
     },
     backButton: {
         padding: 5,
     },
     backButtonText: {
         fontSize: 24,
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: 'bold',
     },
     headerContent: {
@@ -169,7 +171,7 @@ const styles = StyleSheet.create({
     headerTitle: {
         fontSize: 18,
         fontWeight: '700',
-        color: COLORS.white,
+        color: Theme.COLORS.text,
     },
     statusContainer: {
         flexDirection: 'row',
@@ -185,7 +187,7 @@ const styles = StyleSheet.create({
     },
     statusText: {
         fontSize: 12,
-        color: COLORS.textSecondary,
+        color: Theme.COLORS.textSecondary,
     },
     messageList: {
         paddingVertical: 20,
@@ -208,29 +210,29 @@ const styles = StyleSheet.create({
         borderRadius: 20,
     },
     userBubble: {
-        backgroundColor: COLORS.primary,
+        backgroundColor: Theme.COLORS.primary,
         borderBottomRightRadius: 5,
     },
     supportBubble: {
-        backgroundColor: COLORS.card,
+        backgroundColor: Theme.COLORS.surface,
         borderBottomLeftRadius: 5,
         borderWidth: 1,
-        borderColor: COLORS.border,
+        borderColor: Theme.COLORS.border,
     },
     messageText: {
         fontSize: 16,
         lineHeight: 22,
     },
     userText: {
-        color: COLORS.background,
+        color: Theme.COLORS.background,
         fontWeight: '500',
     },
     supportText: {
-        color: COLORS.white,
+        color: Theme.COLORS.text,
     },
     timestamp: {
         fontSize: 10,
-        color: COLORS.textSecondary,
+        color: Theme.COLORS.textSecondary,
         marginTop: 5,
     },
     typingContainer: {
@@ -240,16 +242,16 @@ const styles = StyleSheet.create({
     },
     typingText: {
         fontSize: 12,
-        color: COLORS.textSecondary,
+        color: Theme.COLORS.textSecondary,
         marginLeft: 8,
     },
     inputContainer: {
         flexDirection: 'row',
         alignItems: 'center',
         padding: 10,
-        backgroundColor: COLORS.card,
+        backgroundColor: Theme.COLORS.surface,
         borderTopWidth: 1,
-        borderTopColor: COLORS.border,
+        borderTopColor: Theme.COLORS.border,
     },
     input: {
         flex: 1,
@@ -257,7 +259,7 @@ const styles = StyleSheet.create({
         borderRadius: 25,
         paddingHorizontal: 20,
         paddingVertical: 10,
-        color: COLORS.white,
+        color: Theme.COLORS.text,
         fontSize: 16,
         maxHeight: 100,
     },
@@ -266,9 +268,12 @@ const styles = StyleSheet.create({
         paddingHorizontal: 15,
     },
     sendButtonText: {
-        color: COLORS.primary,
+        color: Theme.COLORS.primary,
         fontWeight: 'bold',
         fontSize: 16,
+    },
+    headerSpacer: {
+        width: 40,
     },
 });
 

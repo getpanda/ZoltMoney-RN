@@ -79,7 +79,6 @@ bundles/
 
 # Environment variables
 .env*
-!.env.example
 
 # Firebase/Google configuration files
 google-services.json

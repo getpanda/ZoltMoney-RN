@@ -16,6 +16,13 @@ import { loginInit } from '../api/auth';
 import Theme from '../theme/Theme';
 import { Typography, Button, CountryPicker } from '../components/common';
 import { Country, COUNTRIES } from '../components/common/CountryPicker';
+import {
+  PhoneNumberUtil,
+  PhoneNumberFormat,
+  AsYouTypeFormatter,
+} from 'google-libphonenumber';
+
+const phoneUtil = PhoneNumberUtil.getInstance();
 
 const LoginScreen = ({ navigation }: any) => {
   const { t } = useTranslation();
@@ -30,8 +37,33 @@ const LoginScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState(false);
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
-  // Simplified phone validation for "Pure RN" - at least 7 digits
-  const isPhoneValid = value.replace(/[^0-9]/g, '').length >= 7;
+  // Get dynamic placeholder and validation from libphonenumber
+  const { placeholder, isValid } = React.useMemo(() => {
+    try {
+      const example = phoneUtil.getExampleNumber(selectedCountry.code);
+      if (!example) return { placeholder: '123 456 789', isValid: false };
+
+      const exampleFormatted = phoneUtil.format(
+        example,
+        PhoneNumberFormat.NATIONAL,
+      );
+      // Replace dashes with spaces as requested
+      const cleanPlaceholder = exampleFormatted.replace(/-/g, ' ');
+
+      // Validation
+      let valid = false;
+      try {
+        const parsed = phoneUtil.parse(value, selectedCountry.code);
+        valid = phoneUtil.isValidNumberForRegion(parsed, selectedCountry.code);
+      } catch {
+        valid = false;
+      }
+
+      return { placeholder: cleanPlaceholder, isValid: valid };
+    } catch {
+      return { placeholder: '123 456 789', isValid: false };
+    }
+  }, [selectedCountry, value]);
 
   const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -41,14 +73,14 @@ const LoginScreen = ({ navigation }: any) => {
 
   const handleSendOtp = async () => {
     setLoading(true);
-    const formattedValue = `+${selectedCountry.callingCode}${value.replace(
-      /[^0-9]/g,
-      '',
-    )}`;
+    // Extract raw digits only for API call
+    const rawDigits = value.replace(/[^0-9]/g, '');
+    const apiPhoneValue = `+${selectedCountry.callingCode}${rawDigits}`;
+
     try {
-      await loginInit(formattedValue);
+      await loginInit(apiPhoneValue);
       navigation.navigate('OtpVerification', {
-        formattedValue,
+        formattedValue: apiPhoneValue,
         selectedCountry,
       });
     } catch (error: any) {
@@ -111,15 +143,28 @@ const LoginScreen = ({ navigation }: any) => {
                 <TextInput
                   ref={phoneNumberRef}
                   style={styles.customNumberInput}
-                  placeholder={t('auth.login.phone_placeholder_example')}
+                  placeholder={placeholder}
                   placeholderTextColor={Theme.COLORS.white20}
                   keyboardType="phone-pad"
+                  maxLength={placeholder.length + 2} // Allow for extra spaces/digits just in case
                   value={value}
                   selectionColor={Theme.COLORS.primary}
                   onChangeText={text => {
-                    // Simple formatting: only numeric
-                    const cleaned = text.replace(/[^0-9]/g, '');
-                    setValue(cleaned);
+                    // Only numeric input allowed
+                    const digits = text.replace(/[^0-9]/g, '');
+
+                    // As-you-type formatting with spaces
+                    const formatter = new AsYouTypeFormatter(
+                      selectedCountry.code,
+                    );
+                    let result = '';
+                    for (const char of digits) {
+                      result = formatter.inputDigit(char);
+                    }
+
+                    // Ensure we use spaces, not dashes
+                    const spaceFormatted = result.replace(/-/g, ' ');
+                    setValue(spaceFormatted);
                   }}
                   autoFocus
                 />
@@ -171,7 +216,7 @@ const LoginScreen = ({ navigation }: any) => {
               <Button
                 title={t('common.continue')}
                 loading={loading}
-                disabled={!isPhoneValid || !isTermsAccepted}
+                disabled={!isValid || !isTermsAccepted}
                 onPress={handleSendOtp}
               />
             </View>

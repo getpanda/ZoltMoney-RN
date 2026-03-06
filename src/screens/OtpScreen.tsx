@@ -19,6 +19,7 @@ import Theme from '../theme/Theme';
 import Typography from '../components/common/Typography';
 import Button from '../components/common/Button';
 import SupportIcon from '../assets/images/support_icon.svg';
+import ChevronBack from '../assets/images/chevron_back.svg';
 
 const OtpScreen = ({ navigation, route }: any) => {
   const { t } = useTranslation();
@@ -169,9 +170,7 @@ const OtpScreen = ({ navigation, route }: any) => {
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}
               >
-                <Typography variant="h3" style={styles.backButtonText}>
-                  ←
-                </Typography>
+                <ChevronBack width={10} height={18} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.supportIcon}>
                 <SupportIcon width={34} height={34} />

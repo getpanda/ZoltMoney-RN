@@ -9,7 +9,6 @@ import {
   Keyboard,
   StatusBar,
   TextInput,
-  Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +16,7 @@ import Theme from '../theme/Theme';
 import { Typography, Button } from '../components/common';
 import { emailOtpInit } from '../api/auth';
 import SupportIcon from '../assets/images/support_icon.svg';
-import { StorageService } from '../services/StorageService';
+import ChevronBack from '../assets/images/chevron_back.svg';
 
 const getApiErrorMessage = (error: any, fallback: string): string => {
   const data = error?.response?.data;
@@ -40,27 +39,6 @@ const EmailVerifyScreen = ({ navigation }: any) => {
   }, []);
 
   const isEmailValid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-
-  const handleLogout = async () => {
-    Alert.alert(
-      t('auth.email_verify.logout_confirm.title'),
-      t('auth.email_verify.logout_confirm.message'),
-      [
-        { text: t('auth.email_verify.logout_confirm.cancel'), style: 'cancel' },
-        {
-          text: t('auth.email_verify.logout_confirm.confirm'),
-          style: 'destructive',
-          onPress: async () => {
-            await StorageService.logout();
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Landing' }],
-            });
-          },
-        },
-      ],
-    );
-  };
 
   const handleSendOtp = async () => {
     setLoading(true);
@@ -92,12 +70,10 @@ const EmailVerifyScreen = ({ navigation }: any) => {
           {/* Header icons */}
           <View style={styles.topRow}>
             <TouchableOpacity
-              onPress={handleLogout}
-              style={styles.logoutButton}
+              onPress={() => navigation.goBack()}
+              style={styles.backButton}
             >
-              <Typography style={styles.logoutText}>
-                {t('auth.email_verify.logout_confirm.confirm')}
-              </Typography>
+              <ChevronBack width={10} height={18} />
             </TouchableOpacity>
             <View style={styles.topRightIcons}>
               <TouchableOpacity style={styles.supportIcon}>
@@ -165,15 +141,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 32,
   },
-  logoutButton: {
+  backButton: {
+    width: 44,
     height: 44,
     justifyContent: 'center',
-    paddingRight: 12,
-  },
-  logoutText: {
-    color: Theme.COLORS.primary,
-    fontSize: 15,
-    fontWeight: '600',
+    alignItems: 'flex-start',
   },
   topRightIcons: {
     flexDirection: 'row',

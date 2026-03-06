@@ -17,7 +17,9 @@ import { loginInit } from '../api/auth';
 import Theme from '../theme/Theme';
 import { Typography, Button, CountryPicker } from '../components/common';
 import { Country, COUNTRIES } from '../components/common/CountryPicker';
-import SupportIcon from '../assets/images/support_icon.svg';
+import IntercomIcon from '../assets/images/support_icon.svg';
+import ChevronDown from '../assets/images/chevron_down.svg';
+import ChevronBack from '../assets/images/chevron_back.svg';
 import {
   PhoneNumberUtil,
   PhoneNumberFormat,
@@ -154,12 +156,10 @@ const LoginScreen = ({ navigation }: any) => {
                 onPress={() => navigation.goBack()}
                 style={styles.backButton}
               >
-                <Typography variant="h3" style={styles.backButtonText}>
-                  {t('common.back_arrow')}
-                </Typography>
+                <ChevronBack width={10} height={18} />
               </TouchableOpacity>
               <TouchableOpacity style={styles.supportIcon}>
-                <SupportIcon width={34} height={34} />
+                <IntercomIcon width={34} height={34} />
               </TouchableOpacity>
             </View>
 
@@ -187,9 +187,11 @@ const LoginScreen = ({ navigation }: any) => {
                   <Typography style={styles.phoneCodeText}>
                     {`+${selectedCountry.callingCode}`}
                   </Typography>
-                  <Typography style={styles.dropdownArrow}>
-                    {t('common.dropdown_arrow')}
-                  </Typography>
+                  <ChevronDown
+                    width={14}
+                    height={14}
+                    style={styles.dropdownArrow}
+                  />
                 </TouchableOpacity>
 
                 <TextInput
@@ -379,11 +381,8 @@ const styles = StyleSheet.create({
     lineHeight: 40,
   },
   dropdownArrow: {
-    color: Theme.COLORS.primary,
-    fontSize: 28,
     marginLeft: 8,
-    fontWeight: '300',
-    lineHeight: 25,
+    marginTop: 4,
   },
   flexFiller: {
     flex: 1,
@@ -396,23 +395,20 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 24,
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
   },
   checkboxWrapper: {
-    padding: 8,
-    marginLeft: -8,
+    paddingRight: 12,
   },
   termsTextWrapper: {
     flexShrink: 1,
   },
   checkbox: {
-    width: 22,
-    height: 22,
+    width: 20,
+    height: 20,
     borderRadius: 4,
     borderWidth: 1,
     borderColor: Theme.COLORS.primary,
-    marginRight: 12,
-    marginTop: 2,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -428,7 +424,7 @@ const styles = StyleSheet.create({
     color: Theme.COLORS.textSecondary,
     fontSize: 13,
     lineHeight: 18,
-    textAlign: 'center',
+    textAlign: 'left',
   },
   linkText: {
     color: Theme.COLORS.primary,

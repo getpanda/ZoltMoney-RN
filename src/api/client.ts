@@ -4,18 +4,15 @@ import { StorageService } from '../services/StorageService';
 import { generateNonce } from '../utils/nonceService';
 
 // Backend Service URLs
-const POLARIS_BASE_URL =
-  Config.POLARIS_BASE_URL || 'https://polaris-dev.getpanda.money/api/v1';
-const CASTOR_BASE_URL =
-  Config.CASTOR_BASE_URL || 'https://castor-dev.getpanda.money/api/v1';
-const CARINA_BASE_URL =
-  Config.CARINA_BASE_URL || 'https://carina-dev.getpanda.money/api/v1';
+const POLARIS_BASE_URL = Config.POLARIS_BASE_URL || '';
+const CASTOR_BASE_URL = Config.CASTOR_BASE_URL || '';
+const CARINA_BASE_URL = Config.CARINA_BASE_URL || '';
 
 const DEFAULT_HEADERS = {
   'Content-Type': 'application/json',
   Accept: 'application/json',
-  'x-api-key-1': Config.X_API_KEY_1 || '36Kjh9MI4FANqEOw6xJBTec3uVe0dXnN',
-  'x-api-key-2': Config.X_API_KEY_2 || 'DVgcmRtZMrOA3EccCDjeIpDsZrCXwJDQ',
+  'x-api-key-1': Config.X_API_KEY_1 || '',
+  'x-api-key-2': Config.X_API_KEY_2 || '',
 };
 
 // specialized clients

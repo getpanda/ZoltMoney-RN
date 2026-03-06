@@ -20,6 +20,7 @@ import {
   PhoneNumberUtil,
   PhoneNumberFormat,
   AsYouTypeFormatter,
+  PhoneNumberType,
 } from 'google-libphonenumber';
 
 const phoneUtil = PhoneNumberUtil.getInstance();
@@ -38,10 +39,11 @@ const LoginScreen = ({ navigation }: any) => {
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
 
   // Get dynamic placeholder and validation from libphonenumber
-  const { placeholder, isValid } = React.useMemo(() => {
+  const phoneValidation = React.useMemo(() => {
     try {
       const example = phoneUtil.getExampleNumber(selectedCountry.code);
-      if (!example) return { placeholder: '123 456 789', isValid: false };
+      if (!example)
+        return { placeholder: '123 456 789', isValid: false, e164Value: '' };
 
       const exampleFormatted = phoneUtil.format(
         example,
@@ -50,20 +52,37 @@ const LoginScreen = ({ navigation }: any) => {
       // Replace dashes with spaces as requested
       const cleanPlaceholder = exampleFormatted.replace(/-/g, ' ');
 
-      // Validation
+      // Validation - Restrict to MOBILE numbers for security/fintech
       let valid = false;
+      let e164 = '';
       try {
         const parsed = phoneUtil.parse(value, selectedCountry.code);
-        valid = phoneUtil.isValidNumberForRegion(parsed, selectedCountry.code);
+        const isOfficialValid = phoneUtil.isValidNumberForRegion(
+          parsed,
+          selectedCountry.code,
+        );
+        const numberType = phoneUtil.getNumberType(parsed);
+
+        // Check if it's a mobile number (or potentially fixed_line_or_mobile in some regions)
+        const isMobile =
+          numberType === PhoneNumberType.MOBILE ||
+          numberType === PhoneNumberType.FIXED_LINE_OR_MOBILE;
+
+        valid = isOfficialValid && isMobile;
+        if (valid) {
+          e164 = phoneUtil.format(parsed, PhoneNumberFormat.E164);
+        }
       } catch {
         valid = false;
       }
 
-      return { placeholder: cleanPlaceholder, isValid: valid };
+      return { placeholder: cleanPlaceholder, isValid: valid, e164Value: e164 };
     } catch {
-      return { placeholder: '123 456 789', isValid: false };
+      return { placeholder: '123 456 789', isValid: false, e164Value: '' };
     }
   }, [selectedCountry, value]);
+
+  const { placeholder, isValid, e164Value } = phoneValidation;
 
   const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -73,9 +92,8 @@ const LoginScreen = ({ navigation }: any) => {
 
   const handleSendOtp = async () => {
     setLoading(true);
-    // Extract raw digits only for API call
-    const rawDigits = value.replace(/[^0-9]/g, '');
-    const apiPhoneValue = `+${selectedCountry.callingCode}${rawDigits}`;
+    // Use the sanitized E.164 value from libphonenumber
+    const apiPhoneValue = e164Value;
 
     try {
       await loginInit(apiPhoneValue);

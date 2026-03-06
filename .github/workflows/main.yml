@@ -2,7 +2,7 @@ name: ZoltMoney CI
 
 on:
   push:
-    branches: [ main, dev, 'feature/**' ]
+    branches: [ main, 'feature/**' ]
   pull_request:
     branches: [ main, dev ]
 

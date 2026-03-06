@@ -3,29 +3,26 @@
  */
 
 export const COLORS = {
-  // Primary - Gold/Greenish
-  primary: '#D4BA7F', // Panda Gold (from ios-js)
-  primaryDark: '#BFA16F',
-  accent: '#E5D1A2',
+  // Primary
+  primary: '#D4BA7F',
 
   // Backgrounds
-  background: '#021511', // Deep Dark Green (from ios-js)
-  surface: '#151515', // Dark Secondary (from web)
-  surfaceLight: '#2F2E2F', // Card/Input (from web)
+  background: '#021511',
+  surface: '#151515',
+  surfaceLight: '#2F2E2F',
 
   // Text
   text: '#FFFFFF',
-  textSecondary: '#DADADA', // Gray Text (from web)
-  textMuted: '#8B8888', // Muted Text (from web)
+  textSecondary: '#DADADA',
+  textMuted: '#8B8888',
 
   // States
-  success: '#3CBA84', // Panda Green (from web)
-  error: 'hsl(0, 84%, 60%)',
-  warning: 'hsl(38, 92%, 50%)',
+  success: '#61E787',
+  error: '#FC4A4A',
 
   // Borders & Dividers
-  border: '#1E3A35',
-  divider: 'rgba(255, 255, 255, 0.1)',
+  border: '#464545',
+  divider: '#2D2D2D',
 };
 
 export const SPACING = {

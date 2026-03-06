@@ -33,7 +33,7 @@ const AppTheme = {
     card: Theme.COLORS.surface,
     text: Theme.COLORS.text,
     border: Theme.COLORS.border,
-    notification: Theme.COLORS.accent,
+    notification: Theme.COLORS.primary,
   },
 };
 

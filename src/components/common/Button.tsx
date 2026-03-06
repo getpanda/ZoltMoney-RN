@@ -58,7 +58,7 @@ const Button: React.FC<ButtonProps> = ({
       default:
         return {
           container: { backgroundColor: COLORS.primary },
-          text: { color: COLORS.background },
+          text: { color: COLORS.surface },
         };
     }
   };

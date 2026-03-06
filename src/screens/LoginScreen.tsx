@@ -53,7 +53,23 @@ const LoginScreen = ({ navigation }: any) => {
         PhoneNumberFormat.NATIONAL,
       );
       // Replace dashes with spaces as requested
-      const cleanPlaceholder = exampleFormatted.replace(/-/g, ' ');
+      let cleanPlaceholder = exampleFormatted.replace(/-/g, ' ');
+
+      // If the placeholder starts with "0" and is for a region where mobiles don't usually use it
+      // (like India or UK in some contexts), or just generally strip the trunk prefix to avoid confusion
+      // if the user is expected to type just the mobile digits.
+      // However, the best way is to check the E164 and National difference.
+      const exampleE164 = phoneUtil.format(example, PhoneNumberFormat.E164);
+      const callingCode = selectedCountry.callingCode;
+      const nominalNational = exampleE164.replace(`+${callingCode}`, '');
+
+      // If the national format has a leading '0' that isn't in nominal E164, it's a trunk prefix
+      if (
+        cleanPlaceholder.startsWith('0') &&
+        !nominalNational.startsWith('0')
+      ) {
+        cleanPlaceholder = cleanPlaceholder.substring(1).trim();
+      }
 
       // Validation - Restrict to MOBILE numbers for security/fintech
       let valid = false;
@@ -79,13 +95,22 @@ const LoginScreen = ({ navigation }: any) => {
         valid = false;
       }
 
-      return { placeholder: cleanPlaceholder, isValid: valid, e164Value: e164 };
+      // Strict maxLength: calculate it based on the formatted placeholder
+      // We allow the exact length of the placeholder as the maximum
+      const strictMax = cleanPlaceholder.length;
+
+      return {
+        placeholder: cleanPlaceholder,
+        isValid: valid,
+        e164Value: e164,
+        maxLength: strictMax,
+      };
     } catch {
       return { placeholder: '123 456 789', isValid: false, e164Value: '' };
     }
   }, [selectedCountry, value]);
 
-  const { placeholder, isValid, e164Value } = phoneValidation;
+  const { placeholder, isValid, e164Value, maxLength } = phoneValidation;
 
   const getApiErrorMessage = (error: any, fallback: string): string => {
     const data = error?.response?.data;
@@ -167,7 +192,7 @@ const LoginScreen = ({ navigation }: any) => {
                   placeholder={placeholder}
                   placeholderTextColor={Theme.COLORS.white20}
                   keyboardType="phone-pad"
-                  maxLength={placeholder.length + 2} // Allow for extra spaces/digits just in case
+                  maxLength={maxLength}
                   value={value}
                   selectionColor={Theme.COLORS.primary}
                   onChangeText={text => {

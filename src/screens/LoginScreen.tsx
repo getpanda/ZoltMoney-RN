@@ -174,31 +174,6 @@ const LoginScreen = ({ navigation }: any) => {
                 disabled={!isPhoneValid || !isTermsAccepted}
                 onPress={handleSendOtp}
               />
-
-              <View style={styles.socialWrapper}>
-                <View style={styles.dividerContainer}>
-                  <View style={styles.divider} />
-                  <Typography variant="caption" style={styles.dividerText}>
-                    {t('auth.login.social_divider')}
-                  </Typography>
-                  <View style={styles.divider} />
-                </View>
-
-                <View style={styles.socialContainer}>
-                  <TouchableOpacity style={styles.socialButton}>
-                    <Typography variant="h3" style={styles.socialIcon}>
-                      G
-                    </Typography>
-                  </TouchableOpacity>
-                  {Platform.OS === 'ios' && (
-                    <TouchableOpacity style={styles.socialButton}>
-                      <Typography variant="h3" style={styles.socialIcon}>
-                        
-                      </Typography>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
             </View>
           </View>
         </KeyboardAvoidingView>
@@ -334,46 +309,6 @@ const styles = StyleSheet.create({
   },
   linkText: {
     color: Theme.COLORS.primary,
-    fontWeight: '500',
-  },
-  socialWrapper: {
-    marginTop: 30,
-  },
-  dividerContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 25,
-  },
-  divider: {
-    flex: 1,
-    height: 1,
-    backgroundColor: Theme.COLORS.white05,
-  },
-  dividerText: {
-    color: Theme.COLORS.white40,
-    fontSize: 11,
-    marginHorizontal: 15,
-    fontWeight: '600',
-    letterSpacing: 1,
-  },
-  socialContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: 20,
-  },
-  socialButton: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    backgroundColor: Theme.COLORS.white05,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: Theme.COLORS.white10,
-  },
-  socialIcon: {
-    color: Theme.COLORS.text,
-    fontSize: 22,
     fontWeight: '500',
   },
 });

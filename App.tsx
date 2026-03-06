@@ -129,27 +129,31 @@ function App() {
     }
 
     // Initialize Intercom
-    try {
-      const appId = Config.INTERCOM_APP_ID;
-      const iosApiKey = Config.INTERCOM_IOS_API_KEY;
-      const androidApiKey = Config.INTERCOM_ANDROID_API_KEY;
+    const initIntercom = async () => {
+      try {
+        const appId = Config.INTERCOM_APP_ID;
+        const iosApiKey = Config.INTERCOM_IOS_API_KEY;
+        const androidApiKey = Config.INTERCOM_ANDROID_API_KEY;
 
-      const apiKey = Platform.select({
-        ios: iosApiKey,
-        android: androidApiKey,
-      });
+        const apiKey = Platform.select({
+          ios: iosApiKey,
+          android: androidApiKey,
+        });
 
-      if (appId && apiKey && Intercom) {
-        Intercom.initialize(appId, apiKey);
-        Logger.info('Intercom initialized successfully');
-      } else if (!Intercom) {
-        Logger.error('Intercom native module is null');
-      } else {
-        Logger.warn('Intercom credentials missing in Config');
+        if (appId && apiKey && Intercom) {
+          await Intercom.initialize(apiKey, appId);
+          Logger.info('Intercom initialized successfully');
+        } else if (!Intercom) {
+          Logger.error('Intercom native module is null');
+        } else {
+          Logger.warn('Intercom credentials missing in Config');
+        }
+      } catch (e) {
+        Logger.error('Intercom initialization failed', e);
       }
-    } catch (e) {
-      Logger.error('Intercom initialization failed', e);
-    }
+    };
+
+    initIntercom();
   }, []);
 
   // ── Step 2: AppState listener — lock on background → foreground ──

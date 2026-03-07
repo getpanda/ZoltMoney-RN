@@ -274,7 +274,9 @@ const LoginScreen = ({ navigation }: any) => {
                       variant="caption"
                       style={styles.linkText}
                       onPress={() =>
-                        Linking.openURL('https://zolt.money/privacy-policy')
+                        Linking.openURL(
+                          'https://getpanda.money/privacy-policy/',
+                        )
                       }
                     >
                       {t('auth.login.terms_privacy_link')}

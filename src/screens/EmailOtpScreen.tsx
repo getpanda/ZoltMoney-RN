@@ -252,11 +252,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   topRow: {
-    marginTop: 12,
+    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 20,
   },
   backButton: {
     width: 44,
@@ -274,16 +274,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   title: {
-    color: Theme.COLORS.text,
-    fontSize: 30,
-    fontWeight: '700',
-    lineHeight: 38,
-    marginBottom: 14,
+    ...Theme.TYPOGRAPHY.screenTitle,
+    marginBottom: 4,
   },
   subtitle: {
-    color: Theme.COLORS.textSecondary,
-    fontSize: 15,
-    lineHeight: 22,
+    ...Theme.TYPOGRAPHY.screenSubtitle,
     marginBottom: 4,
   },
   maskedEmail: {

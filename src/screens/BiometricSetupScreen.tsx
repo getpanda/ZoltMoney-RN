@@ -12,6 +12,8 @@ import Theme from '../theme/Theme';
 import { Typography, Button } from '../components/common';
 import { BiometricService } from '../services/BiometricService';
 import { StorageService } from '../services/StorageService';
+import SupportIcon from '../assets/images/support_icon.svg';
+import ChevronBack from '../assets/images/chevron_back.svg';
 
 const BiometricSetupScreen = ({ navigation }: any) => {
   const { t } = useTranslation();
@@ -66,15 +68,11 @@ const BiometricSetupScreen = ({ navigation }: any) => {
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <Typography style={styles.backButtonText}>
-              {t('common.back_arrow')}
-            </Typography>
+            <ChevronBack width={10} height={18} />
           </TouchableOpacity>
           <View style={styles.topRightIcons}>
             <TouchableOpacity style={styles.supportIcon}>
-              <Typography style={styles.supportEmoji}>
-                {t('common.support_emoji')}
-              </Typography>
+              <SupportIcon width={34} height={34} />
             </TouchableOpacity>
           </View>
         </View>
@@ -138,11 +136,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   topRow: {
-    marginTop: 12,
+    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 28,
+    marginBottom: 20,
   },
   backButton: {
     padding: 4,
@@ -167,19 +165,15 @@ const styles = StyleSheet.create({
     fontSize: 20,
   },
   header: {
-    marginBottom: 8,
+    marginTop: 10,
+    marginBottom: 10,
   },
   title: {
-    color: Theme.COLORS.text,
-    fontSize: 30,
-    fontWeight: '700',
-    lineHeight: 38,
-    marginBottom: 12,
+    ...Theme.TYPOGRAPHY.screenTitle,
+    marginBottom: 4,
   },
   subtitle: {
-    color: Theme.COLORS.textSecondary,
-    fontSize: 15,
-    lineHeight: 22,
+    ...Theme.TYPOGRAPHY.screenSubtitle,
   },
   illustrationWrapper: {
     flex: 1,
@@ -261,7 +255,7 @@ const styles = StyleSheet.create({
     flex: 0.2,
   },
   bottomSection: {
-    marginBottom: 24,
+    marginBottom: Theme.SPACING.lg,
   },
 });
 

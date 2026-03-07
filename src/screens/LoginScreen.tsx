@@ -16,6 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { loginInit } from '../api/auth';
 import Theme from '../theme/Theme';
 import { Typography, Button, CountryPicker } from '../components/common';
+import Config from 'react-native-config';
 import { Country, COUNTRIES } from '../components/common/CountryPicker';
 import IntercomIcon from '../assets/images/support_icon.svg';
 import ChevronDown from '../assets/images/chevron_down.svg';
@@ -264,9 +265,7 @@ const LoginScreen = ({ navigation }: any) => {
                       variant="caption"
                       style={styles.linkText}
                       onPress={() =>
-                        Linking.openURL(
-                          'https://getpanda.money/terms-conditions/',
-                        )
+                        Linking.openURL(Config.TERMS_CONDITIONS_URL || '')
                       }
                     >
                       {t('auth.login.terms_link')}
@@ -276,9 +275,7 @@ const LoginScreen = ({ navigation }: any) => {
                       variant="caption"
                       style={styles.linkText}
                       onPress={() =>
-                        Linking.openURL(
-                          'https://getpanda.money/privacy-policy/',
-                        )
+                        Linking.openURL(Config.PRIVACY_POLICY_URL || '')
                       }
                     >
                       {t('auth.login.terms_privacy_link')}
@@ -342,16 +339,10 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   title: {
-    fontSize: 26, // Slightly reduced from 28
-    fontWeight: '700',
-    color: Theme.COLORS.text,
-    marginBottom: 4,
-    lineHeight: 34,
+    ...Theme.TYPOGRAPHY.screenTitle,
   },
   subtitle: {
-    fontSize: 16,
-    color: Theme.COLORS.textSecondary,
-    fontWeight: '400',
+    ...Theme.TYPOGRAPHY.screenSubtitle,
   },
   form: {
     flex: 1,

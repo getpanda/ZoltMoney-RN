@@ -94,6 +94,18 @@ export const TYPOGRAPHY = {
     fontWeight: '600' as const,
     color: COLORS.text,
   },
+  screenTitle: {
+    fontSize: 26,
+    fontWeight: '700' as const,
+    color: COLORS.text,
+    lineHeight: 34,
+  },
+  screenSubtitle: {
+    fontSize: 16,
+    fontWeight: '400' as const,
+    color: COLORS.textSecondary,
+    lineHeight: 22,
+  },
 };
 
 export const SHADOWS = {

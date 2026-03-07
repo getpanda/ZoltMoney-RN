@@ -136,11 +136,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   topRow: {
-    marginTop: 12,
+    marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 20,
   },
   backButton: {
     width: 44,
@@ -173,19 +173,15 @@ const styles = StyleSheet.create({
     fontWeight: '400',
   },
   header: {
-    marginBottom: 32,
+    marginTop: 10,
+    marginBottom: 10,
   },
   title: {
-    color: Theme.COLORS.text,
-    fontSize: 28,
-    fontWeight: '700',
-    lineHeight: 36,
-    marginBottom: 12,
+    ...Theme.TYPOGRAPHY.screenTitle,
+    marginBottom: 4,
   },
   subtitle: {
-    color: Theme.COLORS.textSecondary,
-    fontSize: 15,
-    lineHeight: 22,
+    ...Theme.TYPOGRAPHY.screenSubtitle,
   },
   inputWrapper: {
     borderRadius: 12,

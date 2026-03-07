@@ -284,14 +284,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
   },
   header: {
-    marginTop: 16,
-    marginBottom: 8,
+    marginTop: 10,
+    marginBottom: 10,
   },
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 20,
   },
   backButton: {
     width: 44,
@@ -313,14 +313,11 @@ const styles = StyleSheet.create({
     fontSize: 22,
   },
   title: {
-    color: Theme.COLORS.text,
-    fontSize: 28,
-    fontWeight: '700',
-    marginBottom: 10,
+    ...Theme.TYPOGRAPHY.screenTitle,
+    marginBottom: 4,
   },
   subtitle: {
-    color: Theme.COLORS.textSecondary,
-    fontSize: 15,
+    ...Theme.TYPOGRAPHY.screenSubtitle,
     marginBottom: 4,
   },
   phoneDisplay: {

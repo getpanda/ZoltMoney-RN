@@ -44,6 +44,13 @@
             "verify_error": "Invalid OTP. Please try again.",
             "resend_error": "Failed to resend OTP. Please try again."
         },
+        "referral": {
+            "title": "Have a referral code?",
+            "subtitle": "Enter your code to earn €10 when you qualify.",
+            "placeholder": "Enter your referral code or link here",
+            "continue": "Continue",
+            "skip": "Skip for now"
+        },
         "biometric": {
             "setup_title": "Secure your Account",
             "setup_subtitle": "Enable biometric authentication for quick and secure access to your account.",

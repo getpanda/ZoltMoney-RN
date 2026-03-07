@@ -14,6 +14,7 @@ import OtpScreen from '../screens/OtpScreen';
 import EmailVerifyScreen from '../screens/EmailVerifyScreen';
 import EmailOtpScreen from '../screens/EmailOtpScreen';
 import BiometricSetupScreen from '../screens/BiometricSetupScreen';
+import ReferralScreen from '../screens/ReferralScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -46,6 +47,11 @@ export const AppNavigator = ({ initialRoute }: AppNavigatorProps) => {
       <Stack.Screen
         name="OtpVerification"
         component={OtpScreen}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Referral"
+        component={ReferralScreen}
         options={{ headerShown: false }}
       />
       <Stack.Screen

@@ -132,11 +132,11 @@ const OtpScreen = ({ navigation, route }: any) => {
         if (onboarding.flow === 'login') {
           navigation.navigate('BiometricLogin');
         } else {
-          navigation.navigate('EmailVerify');
+          navigation.navigate('Referral');
         }
       } else {
         // Legacy fallback: assuming new user if no onboarding data
-        navigation.navigate('EmailVerify');
+        navigation.navigate('Referral');
       }
     } catch (error: any) {
       const getApiErrorMessage = (err: any, fb: string): string => {
